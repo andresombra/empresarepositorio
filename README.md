@@ -1,2 +1,4 @@
 # empresarepositorio
-Repositorio de projesto Empresa
+Repositorio de projeto Empresa.
+#Objectivo inicial 
+Para cadastro de multiempresas para controlar o estoque de produtos de início.
