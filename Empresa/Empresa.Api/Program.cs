@@ -14,6 +14,7 @@ using System.Reflection;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Empresa.Domain.Interfaces.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -74,11 +75,11 @@ builder.Services.AddSwaggerGen(options =>
 
 // DB Context
 builder.Services.AddDbContext<EmpresaDbContext>(options =>
-    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
-        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
+  options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
+    ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
 
 // Repositories and Services
-builder.Services.AddScoped<UsuarioRepository>();
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 
 // FluentValidation
