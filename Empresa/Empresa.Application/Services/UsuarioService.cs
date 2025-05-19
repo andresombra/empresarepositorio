@@ -20,12 +20,11 @@ namespace Empresa.Application.Services
         {
             var usuario = new Usuario
             {
-                EmpresaId = usuarioDto.EmpresaId,
-                UserNome = usuarioDto.UserNome,
-                UserLogin = usuarioDto.UserLogin,
-                UserPass = usuarioDto.UserPass,
-                UserStatus = true,
-                UserDateCreate = DateTime.UtcNow
+                Id = usuarioDto.UsuarioId,
+                Email = usuarioDto.UserLogin,
+                Senha = usuarioDto.UserPass,
+                Situacao = "Ativo",
+                Data = DateTime.UtcNow.ToString("yyyy-MM-dd"),
             };
 
             await _usuarioRepository.AddAsync(usuario);

@@ -43,7 +43,7 @@ namespace Empresa.Api.Controllers
                 }
 
                 response.Data = JsonConvert.SerializeObject(dadosUsuario);
-                response.StatusCode = HttpStatusCode.NotAcceptable;
+                response.StatusCode = HttpStatusCode.BadRequest;
 
                 return response;
             }
@@ -54,7 +54,7 @@ namespace Empresa.Api.Controllers
                 _logger.LogInformation("Usuário criado com sucesso.");
 
                 response.Data = "Usuário criado com sucesso.";
-                response.StatusCode = HttpStatusCode.OK;
+                response.StatusCode = HttpStatusCode.Created;
                 response.Mensagem.ResultCode = (int)ValidationMessageType.Success;
 
                 return response;

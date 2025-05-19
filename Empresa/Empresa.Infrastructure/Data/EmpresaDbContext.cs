@@ -17,7 +17,9 @@ namespace Empresa.Infrastructure.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Usuario>().HasKey(x => new { x.EmpresaId, x.UserId });
+            //modelBuilder.Entity<Usuario>().HasKey(x => new { x..EmpresaId, x.UserId });
         }
+
+
     }
 }

@@ -22,7 +22,7 @@ namespace Empresa.Infrastructure.Repositories
 
         public async Task<Usuario?> AutenticarAsync(string login, string senha)
         {
-            return await _context.Usuarios.FirstOrDefaultAsync(u => u.UserLogin == login && u.UserPass == senha);
+            return await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == login && u.Senha == senha);
         }
     }
 }
