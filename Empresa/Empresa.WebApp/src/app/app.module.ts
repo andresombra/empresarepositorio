@@ -5,7 +5,6 @@ import { AppComponent } from './app.component';
 import { EmpresaListComponent } from './features/empresa/empresa-list/empresa-list.component';
 import { EmpresaFormComponent } from './features/empresa/empresa-form/empresa-form.component';
 import { EmpresaDetailComponent } from './features/empresa/empresa-detail/empresa-detail.component';
-//import { EmpresaComponent } from './empresa/empresa-list/empresa/empresa.component';
 
 @NgModule({
   declarations: [

@@ -91,6 +91,8 @@ TypeAdapterConfig<UsuarioDto, Usuario>.NewConfig();
 builder.Services.AddSingleton(TypeAdapterConfig.GlobalSettings);
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 
+builder.Services.AddScoped<IEmpresaRepository, EmpresaRepository>();
+builder.Services.AddScoped<IEmpresaService, EmpresaService>();
 
 // Configuração do JWT
 var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
@@ -113,13 +115,14 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-var app = builder.Build();
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
         policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 });
+
+var app = builder.Build();
+
 app.UseCors("AllowAll");
 
 // Configure the HTTP request pipeline.

@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Empresa.Domain.Entities
+namespace GerEmpresa.Domain.Entities
 {
     [Table("Empresa")]
     public class Empresa
