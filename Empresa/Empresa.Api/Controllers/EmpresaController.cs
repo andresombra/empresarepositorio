@@ -1,6 +1,5 @@
 using Empresa.Application.DTOs;
 using Empresa.Application.DTOs.Response;
-using Empresa.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]

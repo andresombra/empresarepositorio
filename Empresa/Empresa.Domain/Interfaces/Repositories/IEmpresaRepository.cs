@@ -1,5 +1,3 @@
-using GerEmpresa.Domain.Entities;
-
 public interface IEmpresaRepository
 {
     Task<IEnumerable<GerEmpresa.Domain.Entities.Empresa>> GetAllAsync();

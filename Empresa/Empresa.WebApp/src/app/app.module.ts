@@ -12,7 +12,6 @@ import { EmpresaDetailComponent } from './features/empresa/empresa-detail/empres
     EmpresaListComponent,
     EmpresaFormComponent,
     EmpresaDetailComponent
-  //  EmpresaComponent
   ],
   imports: [
     BrowserModule,

@@ -1,26 +1,37 @@
+using Empresa.Application.DTOs;
 using Empresa.Application.Interfaces;
 using Empresa.Application.Services;
+using Empresa.Application.Validators;
+using Empresa.Domain.Entities;
+using Empresa.Domain.Interfaces.Repositories;
 using Empresa.Infrastructure.Data;
 using Empresa.Infrastructure.Repositories;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Microsoft.EntityFrameworkCore;
-using Empresa.Application.Validators;
 using Mapster;
-using Empresa.Application.DTOs;
-using Empresa.Domain.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using Empresa.Domain.Interfaces.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddDbContext<EmpresaDbContext>(options =>
+  options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
+    ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection")),
+    mySqlOptions => mySqlOptions.EnableRetryOnFailure(
+    maxRetryCount: 5, // Number of retry attempts
+    maxRetryDelay: TimeSpan.FromSeconds(30), // Max delay between retries
+    errorNumbersToAdd: null // List of error numbers to consider transient. Null uses default.
+  )
+));
+
 
 builder.Services.AddSwaggerGen(options =>
 {

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from 'src/environments/environment';
 
 export interface Empresa {
   empresaId: number;
@@ -16,27 +15,34 @@ export interface Empresa {
   providedIn: 'root'
 })
 export class EmpresaService {
-  private apiUrl = `${environment.apiUrl}/empresa`;
+  private apiUrl = `https://localhost:7132/api/empresa`;
 
   constructor(private http: HttpClient) { }
 
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    return new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+  }
+
   getEmpresas(): Observable<Empresa[]> {
-    return this.http.get<Empresa[]>(this.apiUrl);
+    return this.http.get<Empresa[]>(this.apiUrl, { headers: this.getAuthHeaders() });
   }
 
   getEmpresa(id: number): Observable<Empresa> {
-    return this.http.get<Empresa>(`${this.apiUrl}/${id}`);
+    return this.http.get<Empresa>(`${this.apiUrl}/${id}`, { headers: this.getAuthHeaders() });
   }
 
   addEmpresa(empresa: Empresa): Observable<Empresa> {
-    return this.http.post<Empresa>(this.apiUrl, empresa);
+    return this.http.post<Empresa>(this.apiUrl, empresa, { headers: this.getAuthHeaders() });
   }
 
   updateEmpresa(id: number, empresa: Empresa): Observable<Empresa> {
-    return this.http.put<Empresa>(`${this.apiUrl}/${id}`, empresa);
+    return this.http.put<Empresa>(`${this.apiUrl}/${id}`, empresa, { headers: this.getAuthHeaders() });
   }
 
   deleteEmpresa(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.apiUrl}/${id}`, { headers: this.getAuthHeaders() });
   }
 }

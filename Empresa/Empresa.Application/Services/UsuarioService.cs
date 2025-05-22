@@ -3,7 +3,6 @@ using Empresa.Application.DTOs.Response;
 using Empresa.Application.Interfaces;
 using Empresa.Domain.Entities;
 using Empresa.Domain.Interfaces.Repositories;
-using System.Threading.Tasks;
 
 namespace Empresa.Application.Services
 {
@@ -39,6 +38,6 @@ namespace Empresa.Application.Services
             {
                 Token = "fake-jwt-token" // Substitua pela lógica de geração de token real
             };
-        }        
+        }
     }
 }

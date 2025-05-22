@@ -1,5 +1,3 @@
-using System;
-
 namespace Empresa.Application.DTOs.Response
 {
     public class EmpresaResponseDto

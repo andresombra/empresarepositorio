@@ -1,5 +1,3 @@
-using Empresa.Domain.Entities;
-using Empresa.Domain.Interfaces.Repositories;
 using Empresa.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
