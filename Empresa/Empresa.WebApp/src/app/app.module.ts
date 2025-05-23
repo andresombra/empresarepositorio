@@ -6,6 +6,7 @@ import { EmpresaListComponent } from './features/empresa/empresa-list/empresa-li
 import { EmpresaFormComponent } from './features/empresa/empresa-form/empresa-form.component';
 import { EmpresaDetailComponent } from './features/empresa/empresa-detail/empresa-detail.component';
 import { HttpClientModule } from '@angular/common/http';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { HttpClientModule } from '@angular/common/http';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule
+    HttpClientModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
