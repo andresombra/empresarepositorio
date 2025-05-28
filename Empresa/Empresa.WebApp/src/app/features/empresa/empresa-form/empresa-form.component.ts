@@ -8,38 +8,47 @@ import { ActivatedRoute, Router } from '@angular/router';
   templateUrl: './empresa-form.component.html'
 })
 export class EmpresaFormComponent implements OnInit {
-  empresaForm: FormGroup;
+  empresaForm!: FormGroup;
+  isEdit = false;
   empresaId?: number;
 
   constructor(
     private fb: FormBuilder,
     private empresaService: EmpresaService,
-    private route: ActivatedRoute,
-    private router: Router
-  ) {
-    this.empresaForm = this.fb.group({
-      nome: ['', [Validators.required, Validators.maxLength(250)]],
-      email: ['', [Validators.required, Validators.email, Validators.maxLength(300)]],
-      dataCadastro: ['', Validators.required],
-      contato: ['', [Validators.required, Validators.maxLength(15)]],
-      endereco: ['', [Validators.required, Validators.maxLength(300)]]
-    });
-  }
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
-    this.empresaId = Number(this.route.snapshot.paramMap.get('id'));
-    if (this.empresaId) {
-      this.empresaService.getEmpresa(this.empresaId).subscribe(empresa => {
-        this.empresaForm.patchValue(empresa);
-      });
-    }
+    this.empresaForm = this.fb.group({
+      nome: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      dataCadastro: ['', Validators.required],
+      contato: ['', Validators.required],
+      endereco: ['', Validators.required]
+    });
+  
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.isEdit = true;
+        this.empresaId = +id;
+        this.empresaService.getEmpresa(this.empresaId).subscribe(empresa => {
+          this.empresaForm.patchValue(empresa);
+        });
+      }
+    });
   }
 
   onSubmit() {
     if (this.empresaForm.invalid) return;
 
-    const empresa: Empresa = this.empresaForm.value;
-    if (this.empresaId) {
+    const empresa: Empresa = {
+      empresaId: this.empresaId ?? 0,
+      ...this.empresaForm.value
+    };
+
+    if (this.isEdit && this.empresaId) {
       this.empresaService.updateEmpresa(this.empresaId, empresa).subscribe(() => {
         this.router.navigate(['/empresas']);
       });

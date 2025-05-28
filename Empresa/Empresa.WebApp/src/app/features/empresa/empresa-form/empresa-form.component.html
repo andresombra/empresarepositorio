@@ -1,1 +1,54 @@
 <p>empresa-form works!</p>
+<form [formGroup]="empresaForm" (ngSubmit)="onSubmit()">
+    <div>
+        <label>Nome:</label>
+        <input formControlName="nome" />
+        <div *ngIf="empresaForm.get('nome')?.invalid && empresaForm.get('nome')?.touched">
+            Nome é obrigatório.
+        </div>
+    </div>
+
+    <div>
+        <label>Email:</label>
+        <input formControlName="email" />
+        <div *ngIf="empresaForm.get('email')?.invalid && empresaForm.get('email')?.touched">
+            Email válido é obrigatório.
+        </div>
+    </div>
+
+    <div>
+        <label>Data de Cadastro:</label>
+        <input type="date" formControlName="dataCadastro" />
+        <div *ngIf="empresaForm.get('dataCadastro')?.invalid && empresaForm.get('dataCadastro')?.touched">
+            Data de cadastro é obrigatória.
+        </div>
+    </div>
+
+    <div>
+        <label>Contato:</label>
+        <input formControlName="contato" />
+        <div *ngIf="empresaForm.get('contato')?.invalid && empresaForm.get('contato')?.touched">
+            Contato é obrigatório.
+        </div>
+    </div>
+
+    <div>
+        <label>Endereço:</label>
+        <input formControlName="endereco" />
+        <div *ngIf="empresaForm.get('endereco')?.invalid && empresaForm.get('endereco')?.touched">
+            Endereço é obrigatório.
+        </div>
+    </div>
+
+    <button type="submit" [disabled]="empresaForm.invalid">
+        {{ isEdit ? 'Atualizar' : 'Cadastrar' }}
+    </button>
+
+    <button class="btn-custom">My Custom Button</button>
+    <div class="text-primary font-sans">Custom Tailwind Color & Font</div>
+
+    <h1 class="text-3xl font-bold underline">
+        Hello world!
+    </h1>
+
+</form>
