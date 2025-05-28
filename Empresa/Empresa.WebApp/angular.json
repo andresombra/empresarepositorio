@@ -35,8 +35,7 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css",
-              "src/tailwind.css"
+              "src/styles.css"
             ],
             "scripts": []
           },
@@ -98,8 +97,7 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css",
-              "src/tailwind.css"
+              "src/styles.css"
             ],
             "scripts": [],
             "karmaConfig": "karma.conf.js"
