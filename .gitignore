@@ -234,3 +234,4 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
+/Empresa/Empresa.Api/appsettings.Development.json
