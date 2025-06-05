@@ -1,0 +1,10 @@
+<h2>Empresas</h2>
+<a routerLink="/empresas/new">Nova Empresa</a>
+<ul>
+  <li *ngFor="let empresa of empresas">
+    {{ empresa.nome }} - {{ empresa.email }}
+    <a [routerLink]="['/empresas', empresa.empresaId]">Detalhes</a>
+    <a [routerLink]="['/empresas/edit', empresa.empresaId]">Editar</a>
+    <button (click)="deleteEmpresa(empresa.empresaId)">Excluir</button>
+  </li>
+</ul>

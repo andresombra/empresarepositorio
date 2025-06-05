@@ -1,15 +1,11 @@
-﻿using Empresa.Domain.Entities;
+using Empresa.Domain.Entities;
+using Empresa.Domain.Interfaces.Repositories;
 using Empresa.Infrastructure.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace Empresa.Infrastructure.Repositories
 {
-    public class UsuarioRepository
+    public class UsuarioRepository : IUsuarioRepository
     {
         private readonly EmpresaDbContext _context;
 
@@ -26,7 +22,7 @@ namespace Empresa.Infrastructure.Repositories
 
         public async Task<Usuario?> AutenticarAsync(string login, string senha)
         {
-            return await _context.Usuarios.FirstOrDefaultAsync(u => u.UserLogin == login && u.UserPass == senha);
+            return await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == login && u.Senha == senha);
         }
     }
 }
