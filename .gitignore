@@ -235,3 +235,22 @@ _Pvt_Extensions
 # FAKE - F# Make
 .fake/
 /Empresa/Empresa.Api/appsettings.Development.json
+/Empresa/Empresa.Application/src
+/Empresa/Empresa.Domain/tailwind.extension.json
+/Empresa/package-lock.json
+/Empresa/Empresa.Application/.editorconfig
+/Empresa/Empresa.Application/.gitignore
+/Empresa/Empresa.Application/angular.json
+/Empresa/Empresa.Application/package-lock.json
+/Empresa/Empresa.Application/package.json
+/Empresa/Empresa.Application/public
+/Empresa/Empresa.Application/public/favicon.ico
+/Empresa/Empresa.Application/README.md
+/Empresa/Empresa.Application/tsconfig.app.json
+/Empresa/Empresa.Application/tsconfig.json
+/Empresa/Empresa.Application/tsconfig.spec.json
+/Empresa/package.json
+/Empresa/Empresa.Application/.vscode
+/Empresa/Empresa.Application/.vscode/extensions.json
+/Empresa/Empresa.Application/.vscode/launch.json
+/Empresa/Empresa.Application/.vscode/tasks.json
