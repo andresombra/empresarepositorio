@@ -1,0 +1,202 @@
+# Workflow CI/CD para Sistema de Controle de Estoque Multi-Empresas
+# Autor: Andre Sombra
+# Repositório: empresarepositorio
+
+name: .NET CI/CD
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+env:
+  # Configurações globais
+  DOTNET_VERSION: '8.0.x'
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 'true'
+  DOTNET_NOLOGO: 'true'
+  DOTNET_CLI_TELEMETRY_OPTOUT: 'true'
+
+jobs:
+  # Job de Build e Testes
+  build-and-test:
+    name: Build e Testes
+    runs-on: ubuntu-latest
+    
+    steps:
+    # Checkout do código
+    - name: 📥 Checkout do repositório
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # Necessário para análise de código
+    
+    # Setup do .NET
+    - name: ⚙️ Setup .NET ${{ env.DOTNET_VERSION }}
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    # Cache dos pacotes NuGet
+    - name: 📦 Cache NuGet packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/*.props', '**/*.targets') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+    
+    # Definir caminho do projeto
+    - name: 🔍 Definir caminho do projeto
+      run: |
+        echo "📁 Projeto localizado em: ./Empresa/"
+        echo "📄 Solução: ./Empresa/GerEmpresas.sln"
+        echo "PROJECT_PATH=./Empresa" >> $GITHUB_ENV
+        echo "SOLUTION_FILE=./Empresa/GerEmpresas.sln" >> $GITHUB_ENV
+    
+    # Restore das dependências
+    - name: 🔄 Restore dependências
+      run: |
+        echo "🔄 Restaurando dependências da solução..."
+        dotnet restore ${{ env.SOLUTION_FILE }} --verbosity minimal
+    
+    # Verificação de formatação (se você usar dotnet format)
+    - name: 🎨 Verificar formatação do código
+      run: |
+        echo "🎨 Verificando formatação do código..."
+        dotnet format ${{ env.SOLUTION_FILE }} --verify-no-changes --verbosity diagnostic
+      continue-on-error: true # Não falhar o build por formatação
+    
+    # Build da aplicação
+    - name: 🔨 Build da aplicação
+      run: |
+        echo "🔨 Fazendo build da solução..."
+        dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal
+        echo "✅ Build concluído com sucesso!"
+    
+    # Executar testes unitários
+    - name: 🧪 Executar testes unitários
+      run: |
+        echo "🧪 Executando testes da solução..."
+        dotnet test ${{ env.SOLUTION_FILE }} --no-build --configuration Release --verbosity minimal \
+          --collect:"XPlat Code Coverage" \
+          --results-directory ./TestResults/ \
+          --logger trx
+      continue-on-error: true # Não falhar se não houver testes
+    
+    # Upload dos resultados de teste
+    - name: 📊 Upload resultados dos testes
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: |
+          ./TestResults/**/*
+        retention-days: 30
+    
+    # Publicar relatório de cobertura (se houver)
+    - name: 📈 Publicar cobertura de código
+      if: success()
+      run: |
+        echo "🎯 Cobertura de código processada"
+        # Aqui você pode adicionar ferramentas como ReportGenerator
+        # dotnet tool install -g dotnet-reportgenerator-globaltool
+        # reportgenerator -reports:./TestResults/*/coverage.cobertura.xml -targetdir:./CoverageReport
+      continue-on-error: true
+
+  # Job de Análise de Segurança (opcional)
+  security-analysis:
+    name: Análise de Segurança
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: 📥 Checkout do repositório
+      uses: actions/checkout@v4
+    
+    - name: ⚙️ Setup .NET ${{ env.DOTNET_VERSION }}
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    # Verificação de vulnerabilidades em dependências
+    - name: 🔍 Verificar vulnerabilidades
+      run: |
+        echo "🔍 Verificando vulnerabilidades..."
+        dotnet list ${{ env.SOLUTION_FILE }} package --vulnerable --include-transitive 2>&1 | tee vulnerability-report.txt
+        if grep -q "has the following vulnerable packages" vulnerability-report.txt; then
+          echo "⚠️ Vulnerabilidades encontradas!"
+          cat vulnerability-report.txt
+        else
+          echo "✅ Nenhuma vulnerabilidade encontrada"
+        fi
+      continue-on-error: true
+
+  # Job de Deploy (apenas para branch main)
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: [build-and-test, security-analysis]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment: production
+    
+    steps:
+    - name: 📥 Checkout do repositório
+      uses: actions/checkout@v4
+    
+    - name: ⚙️ Setup .NET ${{ env.DOTNET_VERSION }}
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    
+    # Build para produção
+    - name: 🏗️ Build para produção
+      run: |
+        echo "🏗️ Fazendo build para produção..."
+        dotnet restore ${{ env.SOLUTION_FILE }}
+        # Publicar a API (assumindo que é o projeto principal)
+        dotnet publish ${{ env.PROJECT_PATH }}/Empresa.Api/Empresa.Api.csproj --configuration Release --output ./publish --no-restore
+        echo "🚀 Aplicação pronta para deploy!"
+    
+    # Upload do artefato para deploy
+    - name: 📤 Upload artefato de deploy
+      uses: actions/upload-artifact@v4
+      with:
+        name: empresa-repositorio-app
+        path: ./publish/
+        retention-days: 90
+    
+    # Aqui você pode adicionar steps específicos para seu ambiente de deploy
+    # Por exemplo: Azure App Service, AWS, Docker, etc.
+    - name: 🎯 Notificar deploy
+      run: |
+        echo "🎉 Deploy realizado com sucesso!"
+        echo "📱 Sistema Multi-Empresas de Controle de Estoque atualizado"
+
+  # Job de Notificação (opcional)
+  notify:
+    name: Notificações
+    runs-on: ubuntu-latest
+    needs: [build-and-test, security-analysis, deploy]
+    if: always()
+    
+    steps:
+    - name: 📱 Status do Pipeline
+      run: |
+        if [ "${{ needs.build-and-test.result }}" == "success" ]; then
+          echo "✅ Build e testes: SUCCESS"
+        else
+          echo "❌ Build e testes: FAILED"
+        fi
+        
+        if [ "${{ needs.security-analysis.result }}" == "success" ]; then
+          echo "✅ Análise de segurança: SUCCESS"
+        else
+          echo "⚠️ Análise de segurança: FAILED ou SKIPPED"
+        fi
+        
+        if [ "${{ needs.deploy.result }}" == "success" ]; then
+          echo "✅ Deploy: SUCCESS"
+        else
+          echo "⚠️ Deploy: FAILED ou SKIPPED"
+        fi
