@@ -38,7 +38,7 @@ jobs:
     
     # Cache dos pacotes NuGet
     - name: 📦 Cache NuGet packages
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.nuget/packages
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/*.props', '**/*.targets') }}
@@ -70,7 +70,7 @@ jobs:
     
     # Upload dos resultados de teste
     - name: 📊 Upload resultados dos testes
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: test-results
@@ -143,7 +143,7 @@ jobs:
     
     # Upload do artefato para deploy
     - name: 📤 Upload artefato de deploy
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: empresa-repositorio-app
         path: ./publish/
