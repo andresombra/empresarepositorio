@@ -1,4 +1,4 @@
-using Empresa.Application.DTOs;
+﻿using Empresa.Application.DTOs;
 using Empresa.Application.DTOs.Response;
 
 public class EmpresaService : IEmpresaService
@@ -16,11 +16,11 @@ public class EmpresaService : IEmpresaService
         return empresas.Select(e => new EmpresaResponseDto
         {
             EmpresaId = e.Id,
-            Nome = e.Nome,
-            Email = e.Email,
+            Nome = e.Nome!,
+            Email = e.Email!,
             DataCadastro = e.DataCadastro,
-            Contato = e.Contato,
-            Endereco = e.Endereco
+            Contato = e.Contato!,
+            Endereco = e.Endereco!
         });
     }
 
@@ -31,11 +31,11 @@ public class EmpresaService : IEmpresaService
         return new EmpresaResponseDto
         {
             EmpresaId = e.Id,
-            Nome = e.Nome,
-            Email = e.Email,
+            Nome = e.Nome!,
+            Email = e.Email!,
             DataCadastro = e.DataCadastro,
-            Contato = e.Contato,
-            Endereco = e.Endereco
+            Contato = e.Contato!,
+            Endereco = e.Endereco!
         };
     }
 
