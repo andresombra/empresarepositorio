@@ -1,0 +1,94 @@
+# Workflow para investigar a estrutura do repositório
+name: Debug - Encontrar Projeto
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  workflow_dispatch: # Permite executar manualmente
+
+jobs:
+  debug:
+    name: 🔍 Investigar Estrutura do Repositório
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout do repositório
+      uses: actions/checkout@v4
+    
+    - name: 🗂️ Listar todos os arquivos
+      run: |
+        echo "=== ESTRUTURA COMPLETA DO REPOSITÓRIO ==="
+        find . -type f -name "*.cs" -o -name "*.csproj" -o -name "*.sln" -o -name "*.json" | sort
+        echo ""
+        echo "=== ÁRVORE DE DIRETÓRIOS ==="
+        tree -I 'node_modules|bin|obj' || ls -la
+        echo ""
+        echo "=== ARQUIVOS NA RAIZ ==="
+        ls -la
+        echo ""
+        echo "=== PROCURANDO ARQUIVOS .NET ==="
+        echo "Arquivos .sln:"
+        find . -name "*.sln" 2>/dev/null || echo "Nenhum arquivo .sln encontrado"
+        echo ""
+        echo "Arquivos .csproj:"
+        find . -name "*.csproj" 2>/dev/null || echo "Nenhum arquivo .csproj encontrado"
+        echo ""
+        echo "Arquivos .cs:"
+        find . -name "*.cs" | head -10 || echo "Nenhum arquivo .cs encontrado"
+        echo ""
+        echo "=== DIRETÓRIOS PRINCIPAIS ==="
+        find . -maxdepth 2 -type d | sort
+    
+    - name: 🔧 Tentar detectar tipo de projeto
+      run: |
+        echo "=== ANÁLISE DO TIPO DE PROJETO ==="
+        
+        # Verificar se é um projeto .NET
+        if find . -name "*.csproj" -o -name "*.sln" | grep -q .; then
+          echo "✅ Projeto .NET detectado!"
+          
+          # Encontrar o diretório do projeto
+          PROJECT_FILE=$(find . -name "*.csproj" | head -1)
+          if [ -n "$PROJECT_FILE" ]; then
+            PROJECT_DIR=$(dirname "$PROJECT_FILE")
+            echo "📁 Diretório do projeto: $PROJECT_DIR"
+            echo "📄 Arquivo do projeto: $PROJECT_FILE"
+            
+            # Tentar ler o conteúdo do arquivo de projeto
+            echo "=== CONTEÚDO DO ARQUIVO DE PROJETO ==="
+            cat "$PROJECT_FILE"
+          fi
+          
+          # Verificar se existe solução
+          SOLUTION_FILE=$(find . -name "*.sln" | head -1)
+          if [ -n "$SOLUTION_FILE" ]; then
+            echo "📄 Arquivo de solução: $SOLUTION_FILE"
+            echo "=== CONTEÚDO DA SOLUÇÃO ==="
+            cat "$SOLUTION_FILE"
+          fi
+          
+        else
+          echo "❌ Não é um projeto .NET ou arquivos não encontrados"
+          echo "Verificando outros tipos de projeto..."
+          
+          # Verificar outros tipos
+          if [ -f "package.json" ]; then
+            echo "🟢 Projeto Node.js detectado"
+          elif [ -f "requirements.txt" ] || [ -f "setup.py" ]; then
+            echo "🐍 Projeto Python detectado"
+          elif [ -f "pom.xml" ]; then
+            echo "☕ Projeto Java detectado"
+          else
+            echo "❓ Tipo de projeto não identificado"
+          fi
+        fi
+    
+    - name: 🎯 Recomendações
+      run: |
+        echo "=== RECOMENDAÇÕES ==="
+        echo "Com base na análise acima:"
+        echo "1. Verifique se você tem arquivos .csproj ou .sln no repositório"
+        echo "2. Se não tiver, você precisa criar um projeto .NET primeiro"
+        echo "3. Se tiver, anote o caminho exato para usar no workflow"
+        echo "4. Execute: 'dotnet new sln' para criar uma solução se necessário"
+        echo "5. Execute: 'dotnet new webapi' ou 'dotnet new console' para criar um projeto"
