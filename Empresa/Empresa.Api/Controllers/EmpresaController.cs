@@ -21,10 +21,16 @@ namespace Empresa.Api.Controllers
             _service = service;
         }
 
+        /// <summary>
+        /// Get.
+        /// </summary>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EmpresaResponseDto>>> Get()
             => Ok(await _service.GetAllAsync());
 
+        /// <summary>
+        /// Get id.
+        /// </summary>
         [HttpGet("{id}")]
         public async Task<ActionResult<EmpresaResponseDto>> Get(int id)
         {
@@ -33,6 +39,9 @@ namespace Empresa.Api.Controllers
             return Ok(empresa);
         }
 
+        /// <summary>
+        /// Post.
+        /// </summary>
         [HttpPost]
         public async Task<ActionResult<EmpresaResponseDto>> Post([FromBody] EmpresaDto dto)
         {
@@ -40,6 +49,9 @@ namespace Empresa.Api.Controllers
             return CreatedAtAction(nameof(Get), new { id = empresa.EmpresaId }, empresa);
         }
 
+        /// <summary>
+        /// Put.
+        /// </summary>
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] EmpresaDto dto)
         {
@@ -48,6 +60,9 @@ namespace Empresa.Api.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Delete.
+        /// </summary>
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
