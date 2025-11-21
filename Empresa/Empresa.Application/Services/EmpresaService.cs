@@ -1,5 +1,6 @@
 using Empresa.Application.DTOs;
 using Empresa.Application.DTOs.Response;
+using GerEmpresa.Domain.Entities;
 
 public class EmpresaService : IEmpresaService
 {
@@ -16,11 +17,23 @@ public class EmpresaService : IEmpresaService
         return empresas.Select(e => new EmpresaResponseDto
         {
             EmpresaId = e.Id,
-            Nome = e.Nome,
-            Email = e.Email,
+            Nome = e.Nome!,
+            Email = e.Email!,
             DataCadastro = e.DataCadastro,
-            Contato = e.Contato,
-            Endereco = e.Endereco
+            Contato = e.Contato!,
+            Endereco = e.Endereco!,
+            Usuarios = e.Usuarios?
+                       .Select(u => new UsuarioResponseDto
+                       {
+                           Id = u.Id,
+                           EmpresaId = u.EmpresaId,
+                           Email = u.Email ?? string.Empty,
+                           Data = u.Data ?? string.Empty,
+                           Situacao = u.Situacao ?? string.Empty,
+                           Plano = u.Plano,
+                           Adm = u.Adm
+                       })
+                       .ToList() ?? new List<UsuarioResponseDto>()
         });
     }
 
@@ -31,11 +44,23 @@ public class EmpresaService : IEmpresaService
         return new EmpresaResponseDto
         {
             EmpresaId = e.Id,
-            Nome = e.Nome,
-            Email = e.Email,
+            Nome = e.Nome!,
+            Email = e.Email!,
             DataCadastro = e.DataCadastro,
-            Contato = e.Contato,
-            Endereco = e.Endereco
+            Contato = e.Contato!,
+            Endereco = e.Endereco!,
+            Usuarios = e.Usuarios?
+                       .Select(u => new UsuarioResponseDto
+                       {
+                           Id = u.Id,
+                           EmpresaId = u.EmpresaId,
+                           Email = u.Email ?? string.Empty,
+                           Data = u.Data ?? string.Empty,
+                           Situacao = u.Situacao ?? string.Empty,
+                           Plano = u.Plano,
+                           Adm = u.Adm
+                       })
+                       .ToList() ?? new List<UsuarioResponseDto>()
         };
     }
 

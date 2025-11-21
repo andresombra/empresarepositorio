@@ -31,5 +31,8 @@ namespace GerEmpresa.Domain.Entities
         [Column("EMP_ENDERECO", TypeName = "varchar(300)")]
         [StringLength(300, ErrorMessage = "O endereço deve ter até 300 caracteres.")]
         public string? Endereco { get; set; } = string.Empty;
+
+        // Relacionamento 1:N
+        public ICollection<Usuario>? Usuarios { get; set; }
     }
 }

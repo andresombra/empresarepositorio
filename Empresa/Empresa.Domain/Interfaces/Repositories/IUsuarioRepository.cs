@@ -1,4 +1,4 @@
-﻿using Empresa.Domain.Entities;
+﻿using GerEmpresa.Domain.Entities;
 
 namespace Empresa.Domain.Interfaces.Repositories
 {

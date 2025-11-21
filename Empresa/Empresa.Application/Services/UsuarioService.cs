@@ -1,7 +1,7 @@
 using Empresa.Application.DTOs;
 using Empresa.Application.DTOs.Response;
 using Empresa.Application.Interfaces;
-using Empresa.Domain.Entities;
+using GerEmpresa.Domain.Entities;
 using Empresa.Domain.Interfaces.Repositories;
 
 namespace Empresa.Application.Services

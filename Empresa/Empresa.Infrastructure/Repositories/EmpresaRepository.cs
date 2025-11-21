@@ -1,4 +1,5 @@
 using Empresa.Infrastructure.Data;
+using GerEmpresa.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 public class EmpresaRepository : IEmpresaRepository
@@ -12,12 +13,16 @@ public class EmpresaRepository : IEmpresaRepository
 
     public async Task<IEnumerable<GerEmpresa.Domain.Entities.Empresa>> GetAllAsync()
     {
-        return await _context.Empresas.ToListAsync();
+        return await _context.Empresas
+            .Include(e => e.Usuarios)
+            .ToListAsync();
     }
 
     public async Task<GerEmpresa.Domain.Entities.Empresa?> GetByIdAsync(int id)
     {
-        return await _context.Empresas.FindAsync(id);
+        return await _context.Empresas
+            .Include(e => e.Usuarios)
+            .FirstOrDefaultAsync(e => e.Id == id);
     }
 
     public async Task AddAsync(GerEmpresa.Domain.Entities.Empresa empresa)
