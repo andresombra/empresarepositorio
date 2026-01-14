@@ -1,5 +1,6 @@
 ﻿using Empresa.Application.DTOs;
 using Empresa.Application.DTOs.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Empresa.Api.Controllers
@@ -8,6 +9,7 @@ namespace Empresa.Api.Controllers
     /// Controlador para gerenciar operações relacionadas a empresas.
     /// </summary>
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class EmpresaController : ControllerBase
     {
