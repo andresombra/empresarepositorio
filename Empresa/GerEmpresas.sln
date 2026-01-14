@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Empresa.Api", "Empresa.Api\
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "Empresa.WebApp", "Empresa.WebApp\Empresa.WebApp.esproj", "{0E077D1F-C96C-466E-B2AE-1C6C9DDF781F}"
 EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "empresa.app", "Empresa.App\empresa.app.esproj", "{F9FF9C62-5125-6262-DE17-827772E83A3E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,8 +43,17 @@ Global
 		{0E077D1F-C96C-466E-B2AE-1C6C9DDF781F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0E077D1F-C96C-466E-B2AE-1C6C9DDF781F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0E077D1F-C96C-466E-B2AE-1C6C9DDF781F}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{F9FF9C62-5125-6262-DE17-827772E83A3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9FF9C62-5125-6262-DE17-827772E83A3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9FF9C62-5125-6262-DE17-827772E83A3E}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{F9FF9C62-5125-6262-DE17-827772E83A3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9FF9C62-5125-6262-DE17-827772E83A3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9FF9C62-5125-6262-DE17-827772E83A3E}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {96308C9F-7C1C-4234-806F-83B7639AE8C3}
 	EndGlobalSection
 EndGlobal

@@ -8,5 +8,6 @@ namespace Empresa.Application.DTOs.Response
         public DateTime DataCadastro { get; set; }
         public string Contato { get; set; } = string.Empty;
         public string Endereco { get; set; } = string.Empty;
+        public ICollection<UsuarioResponseDto> Usuarios { get; set; } = new List<UsuarioResponseDto>();
     }
 }

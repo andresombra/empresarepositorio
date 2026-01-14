@@ -1,4 +1,4 @@
-﻿using Empresa.Domain.Entities;
+﻿using GerEmpresa.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Empresa.Infrastructure.Data
@@ -16,6 +16,32 @@ namespace Empresa.Infrastructure.Data
 
             modelBuilder.Entity<GerEmpresa.Domain.Entities.Empresa>()
                 .ToTable("Empresa", schema: "andresombra");
+
+            modelBuilder.Entity<GerEmpresa.Domain.Entities.Empresa>().HasKey(e => e.Id)
+                .HasName("PK_Empresa");
+
+            modelBuilder.Entity<Usuario>(entity =>
+            {
+                entity.ToTable("Usuario");
+
+                entity.HasKey(e => e.Id)
+                      .HasName("PK_Usuario");
+
+                entity.Property(e => e.Id).HasColumnName("USU_ID");
+                entity.Property(e => e.Email).HasColumnName("USU_EMAIL");
+                entity.Property(e => e.Senha).HasColumnName("USU_SENHA");
+                entity.Property(e => e.Data).HasColumnName("USU_DATA");
+                entity.Property(e => e.Situacao).HasColumnName("USU_SITUACAO");
+                entity.Property(e => e.Plano).HasColumnName("USU_PLANO");
+                entity.Property(e => e.Adm).HasColumnName("USU_ADM");
+                entity.Property(e => e.EmpresaId).HasColumnName("USU_EMPRESA_ID");
+
+                // RELACIONAMENTO
+                entity.HasOne(u => u.Empresa)
+                      .WithMany(e => e.Usuarios)
+                      .HasForeignKey(u => u.EmpresaId)
+                      .HasConstraintName("FK_Usuario_Empresa");
+            });
         }
 
 

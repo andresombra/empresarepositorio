@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Empresa.Domain.Entities
+namespace GerEmpresa.Domain.Entities
 {
-
     [Table("Usuario")]
     public class Usuario
     {
@@ -31,5 +30,11 @@ namespace Empresa.Domain.Entities
 
         [Column("USU_ADM")]
         public int Adm { get; set; }
+
+        // FK
+        //public int? UsuEmpresaId { get; set; }
+
+        // Navegação
+        public Empresa? Empresa { get; set; }
     }
 }

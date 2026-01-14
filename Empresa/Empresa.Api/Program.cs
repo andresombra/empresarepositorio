@@ -2,7 +2,7 @@
 using Empresa.Application.Interfaces;
 using Empresa.Application.Services;
 using Empresa.Application.Validators;
-using Empresa.Domain.Entities;
+using GerEmpresa.Domain.Entities;
 using Empresa.Domain.Interfaces.Repositories;
 using Empresa.Infrastructure.Data;
 using Empresa.Infrastructure.Repositories;
@@ -133,6 +133,13 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", policy =>
         policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 });
+
+builder.Services.AddControllers()
+    .AddJsonOptions(opts =>
+    {
+        // Prevent serializer exceptions when cycles exist (ignore navigation back-references)
+        opts.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 
 var app = builder.Build();
 
