@@ -1,4 +1,4 @@
-using Empresa.Application.DTOs;
+ï»¿using Empresa.Application.DTOs;
 using Empresa.Application.Interfaces;
 using Empresa.Application.Services;
 using Empresa.Application.Validators;
@@ -15,6 +15,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text;
+using Microsoft.AspNetCore.Mvc;
+[assembly: ApiController]
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -105,8 +107,8 @@ builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IEmpresaRepository, EmpresaRepository>();
 builder.Services.AddScoped<IEmpresaService, EmpresaService>();
 
-// Configuração do JWT
-var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
+// ConfiguraÃ§Ã£o do JWT
+var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]!);
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

@@ -10,6 +10,9 @@ using System.Net;
 
 namespace Empresa.Api.Controllers
 {
+    /// <summary>
+    /// Controlador para gerenciar operações relacionadas a empresas.
+    /// </summary>
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
@@ -18,12 +21,18 @@ namespace Empresa.Api.Controllers
         private readonly IUsuarioService _usuarioService;
         private readonly ILogger<UsuarioController> _logger;
 
+        /// <summary>
+        /// Controlador Usuario.
+        /// </summary>
         public UsuarioController(IUsuarioService usuarioService, ILogger<UsuarioController> logger)
         {
             _usuarioService = usuarioService;
             _logger = logger;
         }
 
+        /// <summary>
+        /// Post.
+        /// </summary>
         [HttpPost]
         public async Task<ResponseEndpoint<string>> Post([FromBody] UsuarioDto dto)
         {
@@ -71,6 +80,9 @@ namespace Empresa.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Login.
+        /// </summary>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto dto)
         {
@@ -79,6 +91,9 @@ namespace Empresa.Api.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Get public.
+        /// </summary>
         [HttpGet("public")]
         [AllowAnonymous] // Permite acesso público a este endpoint específico
         public ResponseEndpoint<string> GetPublic()
