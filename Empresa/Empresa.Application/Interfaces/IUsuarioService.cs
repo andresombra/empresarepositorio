@@ -6,6 +6,7 @@ namespace Empresa.Application.Interfaces
     public interface IUsuarioService
     {
         Task CriarUsuarioAsync(UsuarioDto usuarioDto);
+        Task<IList<UsuarioDto>> ListarAsync();
         Task<LoginResponseDto?> AutenticarAsync(LoginRequestDto request);
     }
 }

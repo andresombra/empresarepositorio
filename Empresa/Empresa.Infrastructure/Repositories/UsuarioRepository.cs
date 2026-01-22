@@ -24,5 +24,10 @@ namespace Empresa.Infrastructure.Repositories
         {
             return await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == login && u.Senha == senha);
         }
+
+        public async Task<IList<Usuario>> ListaAsync()
+        {
+            return await _context.Usuarios.AsNoTracking().ToListAsync();
+        }
     }
 }

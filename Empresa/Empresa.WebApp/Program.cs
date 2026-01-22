@@ -1,4 +1,5 @@
 ﻿using Empresa.WebApp.Components;
+using Empresa.WebApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,17 +7,40 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// ✅ REGISTRAR HttpClient
-builder.Services.AddHttpClient();
-builder.Services.AddScoped(sp => new HttpClient
+// ✅ Registrar TokenService primeiro
+builder.Services.AddHttpClient<ITokenService, TokenService>(client =>
 {
-    BaseAddress = new Uri("https://localhost:7001")
+    var baseUrl = builder.Configuration["ApiSettings:BaseUrl"] ?? "https://localhost:5000";
+    client.BaseAddress = new Uri(baseUrl);
 });
 
+// ✅ Registrar AuthorizationHandler
+builder.Services.AddTransient<AuthorizationHandler>();
+
+// ✅ Registrar HttpClient com o interceptor
+builder.Services.AddHttpClient("API", client =>
+{
+    var baseUrl = builder.Configuration["ApiSettings:BaseUrl"] ?? "https://localhost:5000";
+    client.BaseAddress = new Uri(baseUrl);
+})
+.AddHttpMessageHandler<AuthorizationHandler>();
+
+// ✅ Registrar HttpClient padrão com factory
+builder.Services.AddScoped(sp =>
+{
+    var factory = sp.GetRequiredService<IHttpClientFactory>();
+    return factory.CreateClient("API");
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// ✅ Inicializar token na startup
+using (var scope = app.Services.CreateScope())
+{
+    var tokenService = scope.ServiceProvider.GetRequiredService<ITokenService>();
+    await tokenService.InitializeAsync();
+}
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);

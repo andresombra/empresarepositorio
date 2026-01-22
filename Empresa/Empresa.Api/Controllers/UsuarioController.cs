@@ -3,6 +3,7 @@ using Empresa.Application.Interfaces;
 using Empresa.Application.Validators;
 using Empresa.Domain.Enums;
 using Empresa.Domain.Response;
+using GerEmpresa.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -89,6 +90,16 @@ namespace Empresa.Api.Controllers
             var result = await _usuarioService.AutenticarAsync(dto);
             if (result == null) return Unauthorized("Login inválido.");
             return Ok(result);
+        }
+
+        /// <summary>
+        /// Lists all users.
+        /// </summary>
+        [HttpGet("listar")]
+        [AllowAnonymous] // Permite acesso público a este endpoint específico
+        public async Task<IActionResult> GetUsuarios()
+        {
+           return Ok(await _usuarioService.ListarAsync());
         }
 
         /// <summary>

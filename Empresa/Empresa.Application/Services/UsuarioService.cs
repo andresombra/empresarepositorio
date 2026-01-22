@@ -39,5 +39,10 @@ namespace Empresa.Application.Services
                 Token = "fake-jwt-token" // Substitua pela lógica de geração de token real
             };
         }
+
+        public async Task<IList<UsuarioDto>> ListarAsync()
+        {
+            return (IList<UsuarioDto>)await _usuarioRepository.ListaAsync();
+        }
     }
 }
