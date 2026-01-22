@@ -1,10 +1,18 @@
-using Empresa.WebApp.Components;
+﻿using Empresa.WebApp.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+// ✅ REGISTRAR HttpClient
+builder.Services.AddHttpClient();
+builder.Services.AddScoped(sp => new HttpClient
+{
+    BaseAddress = new Uri("https://localhost:7001")
+});
+
 
 var app = builder.Build();
 
