@@ -1,4 +1,5 @@
-﻿using GerEmpresa.Domain.Entities;
+﻿using Empresa.Infrastructure.Mappings;
+using GerEmpresa.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Empresa.Infrastructure.Data
@@ -13,6 +14,8 @@ namespace Empresa.Infrastructure.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            OnModelCreatingUsuario(modelBuilder);
 
             modelBuilder.Entity<GerEmpresa.Domain.Entities.Empresa>()
                 .ToTable("Empresa", schema: "andresombra");
@@ -43,6 +46,12 @@ namespace Empresa.Infrastructure.Data
                       .HasConstraintName("FK_Usuario_Empresa");
             });
         }
+
+        private static void OnModelCreatingUsuario(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new UsuarioMapping());
+        }
+            
 
 
     }
