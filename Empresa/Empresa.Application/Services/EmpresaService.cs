@@ -1,5 +1,6 @@
 ﻿using Empresa.Application.DTOs;
 using Empresa.Application.DTOs.Response;
+using Empresa.Domain.Interfaces.Repositories;
 using GerEmpresa.Domain.Entities;
 
 public class EmpresaService : IEmpresaService

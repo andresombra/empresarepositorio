@@ -15,17 +15,15 @@ namespace Empresa.Application.Services
             _usuarioRepository = usuarioRepository;
         }
 
-        public async Task CriarUsuarioAsync(UsuarioDto usuarioDto)
+        public async Task CriarUsuarioAsync(Usuario usuario)
         {
-            var usuario = new Usuario
-            {
-                Id = usuarioDto.UsuarioId,
-                Email = usuarioDto.UserLogin,
-                Senha = usuarioDto.UserPass,
-                Situacao = "Ativo",
-                Data = DateTime.UtcNow.ToString("yyyy-MM-dd"),
-            };
-
+            if (usuario == null)
+                throw new ArgumentNullException(nameof(usuario));
+            
+            usuario.Email = usuario!.Email;
+            usuario.Situacao = "Ativo";
+            usuario.Data = DateTime.UtcNow.ToString("yyyy-MM-dd");
+            
             await _usuarioRepository.AddAsync(usuario);
         }
 
@@ -40,9 +38,10 @@ namespace Empresa.Application.Services
             };
         }
 
-        public async Task<IList<UsuarioDto>> ListarAsync()
+        public async Task<IList<Usuario>> ListarAsync() //Retorna Usuario do Dominio , DTOs e na camada de Aplicaçao AppService
         {
-            return (IList<UsuarioDto>)await _usuarioRepository.ListaAsync();
+            var lista = await _usuarioRepository.ListaAsync();
+            return lista;
         }
     }
 }

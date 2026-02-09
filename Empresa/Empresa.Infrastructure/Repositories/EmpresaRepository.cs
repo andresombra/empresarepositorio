@@ -1,14 +1,13 @@
+using Empresa.Domain.Interfaces.Repositories;
 using Empresa.Infrastructure.Data;
+using Empresa.Infrastructure.Repositories;
 using GerEmpresa.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-public class EmpresaRepository : IEmpresaRepository
+public class EmpresaRepository : BaseRepository<GerEmpresa.Domain.Entities.Empresa>, IEmpresaRepository
 {
-    private readonly EmpresaDbContext _context;
-
-    public EmpresaRepository(EmpresaDbContext context)
+    public EmpresaRepository(EmpresaDbContext context) : base(context)
     {
-        _context = context;
     }
 
     public async Task<IEnumerable<GerEmpresa.Domain.Entities.Empresa>> GetAllAsync()

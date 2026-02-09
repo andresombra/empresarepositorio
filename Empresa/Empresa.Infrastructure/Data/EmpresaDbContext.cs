@@ -10,6 +10,7 @@ namespace Empresa.Infrastructure.Data
 
         public DbSet<Usuario> Usuarios => Set<Usuario>();
         public DbSet<GerEmpresa.Domain.Entities.Empresa> Empresas { get; set; }
+        public DbSet<Fornecedor> Fornecedores { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -45,6 +46,9 @@ namespace Empresa.Infrastructure.Data
                       .HasForeignKey(u => u.EmpresaId)
                       .HasConstraintName("FK_Usuario_Empresa");
             });
+
+            // Aplicar mapeamento do Fornecedor
+            modelBuilder.ApplyConfiguration(new FornecedorMapping());
         }
 
         private static void OnModelCreatingUsuario(ModelBuilder modelBuilder)
@@ -52,7 +56,6 @@ namespace Empresa.Infrastructure.Data
             modelBuilder.ApplyConfiguration(new UsuarioMapping());
         }
             
-
 
     }
 }

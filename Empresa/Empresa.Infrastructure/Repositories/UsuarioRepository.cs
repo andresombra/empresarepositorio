@@ -27,7 +27,7 @@ namespace Empresa.Infrastructure.Repositories
 
         public async Task<IList<Usuario>> ListaAsync()
         {
-            return await _context.Usuarios.AsNoTracking().ToListAsync();
+            return await _context.Usuarios.Include(x => x.Empresa).AsNoTracking().ToListAsync();
         }
     }
 }

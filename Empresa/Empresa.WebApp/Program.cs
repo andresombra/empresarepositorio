@@ -7,12 +7,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// ✅ Registrar TokenService primeiro
-builder.Services.AddHttpClient<ITokenService, TokenService>(client =>
+// ✅ Registrar cliente de autenticação (sem AuthorizationHandler) e TokenService
+var baseUrl = builder.Configuration["ApiSettings:BaseUrl"] ?? "https://localhost:5000";
+builder.Services.AddHttpClient("AUTH", client =>
 {
-    var baseUrl = builder.Configuration["ApiSettings:BaseUrl"] ?? "https://localhost:5000";
     client.BaseAddress = new Uri(baseUrl);
 });
+
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 // ✅ Registrar AuthorizationHandler
 builder.Services.AddTransient<AuthorizationHandler>();

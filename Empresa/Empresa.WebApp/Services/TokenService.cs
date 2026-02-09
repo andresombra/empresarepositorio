@@ -1,16 +1,18 @@
 using System.Net.Http.Json;
+using System.Net;
+using System.Net.Http;
 
 namespace Empresa.WebApp.Services
 {
     public class TokenService : ITokenService
     {
-        private readonly HttpClient _httpClient;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _configuration;
         private string? _token;
 
-        public TokenService(HttpClient httpClient, IConfiguration configuration)
+        public TokenService(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
-            _httpClient = httpClient;
+            _httpClientFactory = httpClientFactory;
             _configuration = configuration;
         }
 
@@ -24,8 +26,13 @@ namespace Empresa.WebApp.Services
                 if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
                     throw new Exception("Credenciais não configuradas no appsettings.json");
 
-                var loginRequest = new { username = $"{username}", password = $"{password}" };
-                var response = await _httpClient.PostAsJsonAsync("api/auth/token", loginRequest);
+                // Use a dedicated client for authentication to avoid circular DI between
+                // the authorization handler and the token service.
+                var clientName = _configuration["ApiSettings:AuthClientName"] ?? "AUTH";
+                var client = _httpClientFactory.CreateClient(clientName);
+
+                var loginRequest = new { username = username, password = password };
+                var response = await client.PostAsJsonAsync("api/auth/token", loginRequest);
 
                 if (response.IsSuccessStatusCode)
                 {

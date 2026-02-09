@@ -94,6 +94,9 @@ builder.Services.AddDbContext<EmpresaDbContext>(options =>
 // Repositories and Services
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+// Fornecedores - Repository e Service
+builder.Services.AddScoped<IFornecedorRepository, FornecedorRepository>();
+builder.Services.AddScoped<IFornecedorService, FornecedorService>();
 
 // FluentValidation
 builder.Services.AddFluentValidationAutoValidation();

@@ -60,7 +60,17 @@ namespace Empresa.Api.Controllers
 
             try
             {
-                await _usuarioService.CriarUsuarioAsync(dto);
+                // Mapear UsuarioDto para a entidade de domínio Usuario antes de chamar o service
+                var usuario = new Usuario
+                {
+                    Id = dto.UsuarioId,
+                    EmpresaId = dto.UsuarioEmpresaId,
+                    Email = dto.UserLogin ?? string.Empty,
+                    Senha = dto.UserPass ?? string.Empty
+                    // Nota: propriedades como Data, Situacao, Plano, Adm são definidas no service/DB
+                };
+
+                await _usuarioService.CriarUsuarioAsync(usuario);
                 _logger.LogInformation("Usuário criado com sucesso.");
 
                 response.Data = "Usuário criado com sucesso.";
@@ -99,7 +109,7 @@ namespace Empresa.Api.Controllers
         [AllowAnonymous] // Permite acesso público a este endpoint específico
         public async Task<IActionResult> GetUsuarios()
         {
-           return Ok(await _usuarioService.ListarAsync());
+            return Ok(await _usuarioService.ListarAsync());
         }
 
         /// <summary>
