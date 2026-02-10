@@ -55,7 +55,25 @@ namespace Empresa.Infrastructure.Data
         {
             modelBuilder.ApplyConfiguration(new UsuarioMapping());
         }
-            
+
+        public async Task BeginTransaction()
+        {
+            await Database.BeginTransactionAsync();
+        }
+
+        public async Task<bool> Commit()
+        {
+            var retorno = await SaveChangesAsync() > 0;
+
+            await Database.CommitTransactionAsync();
+
+            return retorno;
+        }
+
+        public async Task Rollback()
+        {
+            await Database.RollbackTransactionAsync();
+        }   
 
     }
 }
