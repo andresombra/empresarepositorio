@@ -1,21 +1,23 @@
 ﻿using Empresa.Application.DTOs;
+using Empresa.Application.DTOs.Response;
 using Empresa.Application.Interfaces;
 using Empresa.Application.Services;
 using Empresa.Application.Validators;
-using GerEmpresa.Domain.Entities;
 using Empresa.Domain.Interfaces.Repositories;
 using Empresa.Infrastructure.Data;
 using Empresa.Infrastructure.Repositories;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using GerEmpresa.Domain.Entities;
 using Mapster;
+using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text;
-using Microsoft.AspNetCore.Mvc;
 [assembly: ApiController]
 
 var builder = WebApplication.CreateBuilder(args);
@@ -104,11 +106,15 @@ builder.Services.AddValidatorsFromAssemblyContaining<UsuarioDtoValidator>();
 
 // Mapster
 TypeAdapterConfig<UsuarioDto, Usuario>.NewConfig();
+TypeAdapterConfig<EmpresaResponseDto, GerEmpresa.Domain.Entities.Empresa>.NewConfig();
 builder.Services.AddSingleton(TypeAdapterConfig.GlobalSettings);
+builder.Services.AddScoped<IMapper, ServiceMapper>();
+builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 
 builder.Services.AddScoped<IEmpresaRepository, EmpresaRepository>();
 builder.Services.AddScoped<IEmpresaService, EmpresaService>();
+
 
 // Configuração do JWT
 var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]!);

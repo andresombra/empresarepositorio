@@ -33,6 +33,6 @@ namespace GerEmpresa.Domain.Entities
         public string? Endereco { get; set; } = string.Empty;
 
         // Relacionamento 1:N
-        public ICollection<Usuario>? Usuarios { get; set; }
+        public virtual ICollection<Usuario>? Usuarios { get; set; }
     }
 }
