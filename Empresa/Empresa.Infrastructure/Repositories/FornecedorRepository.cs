@@ -5,13 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Empresa.Infrastructure.Repositories
 {
-    public class FornecedorRepository : IFornecedorRepository
+    public class FornecedorRepository : BaseRepository<Fornecedor>, IFornecedorRepository
     {
-        private readonly EmpresaDbContext _context;
-
-        public FornecedorRepository(EmpresaDbContext context)
+        public FornecedorRepository(EmpresaDbContext context) : base(context)
         {
-            _context = context;
         }
 
         public async Task AddAsync(Fornecedor fornecedor)

@@ -5,14 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Empresa.Infrastructure.Repositories
 {
-    public class UsuarioRepository : IUsuarioRepository
+    public class UsuarioRepository : BaseRepository<Usuario>, IUsuarioRepository
     {
-        private readonly EmpresaDbContext _context;
-
-        public UsuarioRepository(EmpresaDbContext context)
-        {
-            _context = context;
-        }
+        public UsuarioRepository(EmpresaDbContext context) : base(context) { }
 
         public async Task AddAsync(Usuario usuario)
         {
