@@ -3,6 +3,8 @@ using Empresa.Application.DTOs.Response;
 using Empresa.Application.Interfaces;
 using GerEmpresa.Domain.Entities;
 using Empresa.Domain.Interfaces.Repositories;
+using Mapster;
+using Empresa.Application.DTOs.Usuario;
 
 namespace Empresa.Application.Services
 {
@@ -18,9 +20,10 @@ namespace Empresa.Application.Services
         public async Task CriarUsuarioAsync(Usuario usuario)
         {
             if (usuario == null)
+            {
                 throw new ArgumentNullException(nameof(usuario));
-            
-            usuario.Email = usuario!.Email;
+            }
+
             usuario.Situacao = "Ativo";
             usuario.Data = DateTime.UtcNow.ToString("yyyy-MM-dd");
             
@@ -38,10 +41,16 @@ namespace Empresa.Application.Services
             };
         }
 
-        public async Task<IList<Usuario>> ListarAsync() //Retorna Usuario do Dominio , DTOs e na camada de Aplicaçao AppService
+        public async Task<IList<ResponseUsuarioDto>> ListarAsync() // Return DTOs mapped with Mapster
         {
             var lista = await _usuarioRepository.ListaAsync();
-            return lista;
+            if (lista == null || lista.Count == 0)
+            {
+                return new List<ResponseUsuarioDto>();
+            }
+
+            var dtoList = lista.Adapt<IList<ResponseUsuarioDto>>();
+            return dtoList;
         }
     }
 }

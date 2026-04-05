@@ -3,6 +3,7 @@ using Empresa.Application.DTOs.Response;
 using Empresa.Domain.Interfaces.Repositories;
 using GerEmpresa.Domain.Entities;
 using MapsterMapper;
+using Microsoft.EntityFrameworkCore;
 
 namespace Empresa.Application.Services;
 
@@ -20,11 +21,34 @@ public class EmpresaService : IEmpresaService
     public async Task<IEnumerable<EmpresaResponseDto>> GetAllAsync()
     {
         var listaEmpresa = await _repo.GetAllAsync();
-        return _mapper.Map<IEnumerable<EmpresaResponseDto>>(listaEmpresa);
+        return listaEmpresa
+               .Select(e => new EmpresaResponseDto
+               {
+                   EmpresaId = e.Id,
+                   Nome = e.Nome ?? string.Empty,
+                   Email = e.Email ?? string.Empty,
+                   DataCadastro = e.DataCadastro,
+                   Contato = e.Contato ?? string.Empty,
+                   Endereco = e.Endereco ?? string.Empty,
+                   Usuarios = e.Usuarios?
+                              .Select(u => new UsuarioResponseDto
+                              {
+                                  Id = u.Id,
+                                  EmpresaId = u.EmpresaId,
+                                  Email = u.Email ?? string.Empty,
+                                  Data = u.Data ?? string.Empty,
+                                  Situacao = u.Situacao ?? string.Empty,
+                                  Plano = u.Plano,
+                                  Adm = u.Adm
+                              })
+                              .ToList() ?? new List<UsuarioResponseDto>()
+               })
+               .ToList();
     }
 
     public async Task<EmpresaResponseDto?> GetByIdAsync(int id)
     {
+
         var e = await _repo.GetByIdAsync(id);
         if (e == null) return null;
         return new EmpresaResponseDto
