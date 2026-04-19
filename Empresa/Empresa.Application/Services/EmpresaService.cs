@@ -20,7 +20,7 @@ public class EmpresaService : IEmpresaService
 
     public async Task<IEnumerable<EmpresaResponseDto>> GetAllAsync()
     {
-        var listaEmpresa = await _repo.GetAllAsync();
+        var listaEmpresa = await _repo.GetAllAsync(emp => true);
         return listaEmpresa
                .Select(e => new EmpresaResponseDto
                {
@@ -49,7 +49,7 @@ public class EmpresaService : IEmpresaService
     public async Task<EmpresaResponseDto?> GetByIdAsync(int id)
     {
 
-        var e = await _repo.GetByIdAsync(id);
+        var e = await _repo.GetAsync(emp => emp.Id == id);
         if (e == null) return null;
         return new EmpresaResponseDto
         {
@@ -84,7 +84,8 @@ public class EmpresaService : IEmpresaService
             Contato = dto.Contato,
             Endereco = dto.Endereco
         };
-        await _repo.AddAsync(empresa);
+
+        await _repo.InsertAsync(empresa);
         return new EmpresaResponseDto
         {
             EmpresaId = empresa.Id,
@@ -98,7 +99,7 @@ public class EmpresaService : IEmpresaService
 
     public async Task<bool> UpdateAsync(int id, EmpresaDto dto)
     {
-        var empresa = await _repo.GetByIdAsync(id);
+        var empresa = await _repo.GetAsync(emp => emp.Id == id);
         if (empresa == null) return false;
         empresa.Nome = dto.Nome;
         empresa.Email = dto.Email;
@@ -111,7 +112,7 @@ public class EmpresaService : IEmpresaService
 
     public async Task<bool> DeleteAsync(int id)
     {
-        var empresa = await _repo.GetByIdAsync(id);
+        var empresa = await _repo.GetAsync(emp => emp.Id == id);
         if (empresa == null) return false;
         await _repo.DeleteAsync(empresa);
         return true;

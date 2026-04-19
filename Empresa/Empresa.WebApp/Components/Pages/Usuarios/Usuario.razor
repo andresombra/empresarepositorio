@@ -5,6 +5,7 @@
 @using Empresa.Application.DTOs
 @using System.Net.Http.Json
 @inject HttpClient Http
+@inject IHttpClientFactory ClientFactory
 @inject IJSRuntime Js
 
 <PageTitle>Usuários</PageTitle>
@@ -153,7 +154,9 @@
         try
         {
             carregando = true;
-            usuarios = await Http.GetFromJsonAsync<List<UsuarioDto>>("api/usuario/listar") ?? new();
+            var client = ClientFactory.CreateClient("API"); // garante o cliente com AuthorizationHandler
+            usuarios = await client.GetFromJsonAsync<List<UsuarioDto>>("api/usuario/listar") ?? new();
+            //usuarios = await Http.GetFromJsonAsync<List<UsuarioDto>>("api/usuario/listar") ?? new();
         }
         catch (Exception ex)
         {

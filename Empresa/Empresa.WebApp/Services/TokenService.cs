@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using System.Net;
 using System.Net.Http;
+using System.Text.Json.Serialization;
 
 namespace Empresa.WebApp.Services
 {
@@ -57,6 +58,7 @@ namespace Empresa.WebApp.Services
 
         private class TokenResponse
         {
+            [JsonPropertyName("token")]
             public string? Token { get; set; }
         }
     }

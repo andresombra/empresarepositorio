@@ -9,12 +9,6 @@ namespace Empresa.Infrastructure.Repositories
     {
         public UsuarioRepository(EmpresaDbContext context) : base(context) { }
 
-        public async Task AddAsync(Usuario usuario)
-        {
-            _context.Usuarios.Add(usuario);
-            await _context.SaveChangesAsync();
-        }
-
         public async Task<Usuario?> AutenticarAsync(string login, string senha)
         {
             return await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == login && u.Senha == senha);
