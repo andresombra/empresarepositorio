@@ -43,7 +43,7 @@ namespace Empresa.Infrastructure.Repositories
 
         public async Task<T> InsertAsync(T item)
         {
-            _dataset.Add(item);
+            await _dataset.AddAsync(item);
             await _context.SaveChangesAsync(CancellationToken.None);
             return item;
         }
