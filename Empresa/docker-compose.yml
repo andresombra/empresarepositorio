@@ -1,0 +1,73 @@
+services:
+  # Banco de dados MySQL (baseado no seu appsettings.json)
+  mysql:
+    image: mysql:8.0
+    container_name: empresa-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=empresadb
+      - MYSQL_USER=empresauser
+      - MYSQL_PASSWORD=empresapass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - empresa-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # API - Mapeada para a porta 6161 que você está tentando acessar
+  api:
+    build:
+      context: .
+      dockerfile: Empresa.Api/Dockerfile
+    container_name: empresa-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=server=mysql;port=3306;database=empresadb;user=empresauser;password=empresapass
+      - Jwt__Key=C3lYopVS4IxnLmnoZDIaX4BxaXXpDjMJ44TIPRGDWSg=
+      - Jwt__Issuer=Gestor.WebApi
+      - Jwt__Audience=Gestor.WebApiUsers
+      - Jwt__ExpiresInMinutes=120
+    ports:
+      - "5161:80"      # HTTP (porta do launchSettings.json)
+      - "6161:80"      # Porta adicional que você estava tentando
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - empresa-network
+    restart: unless-stopped
+
+  # WebApp Blazor
+  webapp:
+    build:
+      context: .
+      dockerfile: Empresa.WebApp/Dockerfile
+    container_name: empresa-webapp
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - ApiSettings__BaseUrl=http://api:80
+      - ApiSettings__Username=admin
+      - ApiSettings__Password=password
+    ports:
+      - "5200:80"      # Porta do launchSettings.json do WebApp
+      - "7174:80"      # Porta HTTPS do launchSettings.json
+    depends_on:
+      - api
+    networks:
+      - empresa-network
+    restart: unless-stopped
+
+networks:
+  empresa-network:
+    driver: bridge
+
+volumes:
+  mysql-data:

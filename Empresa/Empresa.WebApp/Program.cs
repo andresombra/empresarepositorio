@@ -39,8 +39,15 @@ var app = builder.Build();
 // ✅ Inicializar token na startup
 using (var scope = app.Services.CreateScope())
 {
-    var tokenService = scope.ServiceProvider.GetRequiredService<ITokenService>();
-    await tokenService.InitializeAsync();
+    try
+    {
+        var tokenService = scope.ServiceProvider.GetRequiredService<ITokenService>();
+        await tokenService.InitializeAsync();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Erro ao inicializar token: {ex.Message}");
+    }
 }
 
 if (!app.Environment.IsDevelopment())
@@ -50,8 +57,10 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
-
+if (!app.Environment.IsDevelopment())
+{
+    //app.UseHttpsRedirection();
+}
 
 app.UseAntiforgery();
 

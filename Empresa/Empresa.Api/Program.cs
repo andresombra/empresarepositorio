@@ -26,17 +26,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddDbContext<EmpresaDbContext>(options =>
-  options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
-    ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection")),
-    mySqlOptions => mySqlOptions.EnableRetryOnFailure(
-    maxRetryCount: 5, // Number of retry attempts
-    maxRetryDelay: TimeSpan.FromSeconds(30), // Max delay between retries
-    errorNumbersToAdd: null // List of error numbers to consider transient. Null uses default.
-  )
-));
-
-
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
@@ -164,13 +153,13 @@ app.UseCors("AllowAll");
 // Middleware
 if (app.Environment.IsDevelopment())
 {
+    app.UseSwagger();
     app.UseSwaggerUI(options => // UseSwaggerUI is called only in Development.
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
         options.RoutePrefix = string.Empty;
     });
 
-    app.UseSwagger();
 }
 
 app.UseHttpsRedirection();
