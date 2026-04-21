@@ -46,6 +46,8 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 
+    builder.WebHost.UseUrls($@"http://+:80");
+
     // Adiciona o suporte ao Bearer Token
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
@@ -132,12 +134,14 @@ builder.Services.AddCors(options =>
         policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 });
 
+
 builder.Services.AddControllers()
     .AddJsonOptions(opts =>
     {
         // Prevent serializer exceptions when cycles exist (ignore navigation back-references)
         opts.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
+
 
 var app = builder.Build();
 
@@ -157,15 +161,18 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(options => // UseSwaggerUI is called only in Development.
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-        options.RoutePrefix = string.Empty;
+        options.RoutePrefix = "swagger";
     });
-
 }
 
-app.UseHttpsRedirection();
+//if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("ASPNETCORE_HTTPS_PORTS")))
+//{
+    app.UseHttpsRedirection();
+//}
+
+app.MapGet("/", () => "API rodando...");
 
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-
 app.Run();
