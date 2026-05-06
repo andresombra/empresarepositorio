@@ -1,16 +1,6 @@
-﻿using Empresa.Application.DTOs;
-using Empresa.Application.DTOs.Response;
-using Empresa.Application.Interfaces;
-using Empresa.Application.Services;
-using Empresa.Application.Validators;
-using Empresa.Domain.Interfaces.Repositories;
+﻿using Empresa.Application;
+using Empresa.Infrastructure;
 using Empresa.Infrastructure.Data;
-using Empresa.Infrastructure.Repositories;
-using FluentValidation;
-using FluentValidation.AspNetCore;
-using GerEmpresa.Domain.Entities;
-using Mapster;
-using MapsterMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -73,8 +63,7 @@ builder.Services.AddSwaggerGen(options =>
             Array.Empty<string>()
         }
     });
-
-    // using System.Reflection;
+    
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
@@ -84,28 +73,8 @@ builder.Services.AddDbContext<EmpresaDbContext>(options =>
   options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
     ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
 
-// Repositories and Services
-builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
-builder.Services.AddScoped<IUsuarioService, UsuarioService>();
-// Fornecedores - Repository e Service
-builder.Services.AddScoped<IFornecedorRepository, FornecedorRepository>();
-builder.Services.AddScoped<IFornecedorService, FornecedorService>();
-
-// FluentValidation
-builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddValidatorsFromAssemblyContaining<UsuarioDtoValidator>();
-
-// Mapster
-TypeAdapterConfig<UsuarioDto, Usuario>.NewConfig();
-TypeAdapterConfig<EmpresaResponseDto, GerEmpresa.Domain.Entities.Empresa>.NewConfig();
-builder.Services.AddSingleton(TypeAdapterConfig.GlobalSettings);
-builder.Services.AddScoped<IMapper, ServiceMapper>();
-builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
-builder.Services.AddScoped<IUsuarioService, UsuarioService>();
-
-builder.Services.AddScoped<IEmpresaRepository, EmpresaRepository>();
-builder.Services.AddScoped<IEmpresaService, EmpresaService>();
-
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(builder.Configuration);
 
 // Configuração do JWT
 var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]!);
@@ -161,7 +130,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(options => // UseSwaggerUI is called only in Development.
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-        options.RoutePrefix = "swagger";
+        options.RoutePrefix = string.Empty; //"swagger";
     });
 }
 
