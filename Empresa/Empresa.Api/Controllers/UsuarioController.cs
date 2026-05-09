@@ -3,6 +3,7 @@ using Empresa.Application.Interfaces;
 using Empresa.Application.Validators;
 using Empresa.Domain.Enums;
 using Empresa.Domain.Response;
+using GerEmpresa.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -10,6 +11,9 @@ using System.Net;
 
 namespace Empresa.Api.Controllers
 {
+    /// <summary>
+    /// Controlador para gerenciar operações relacionadas a empresas.
+    /// </summary>
     [Authorize]
     [ApiController]
     [Route("api/[controller]")]
@@ -18,12 +22,18 @@ namespace Empresa.Api.Controllers
         private readonly IUsuarioService _usuarioService;
         private readonly ILogger<UsuarioController> _logger;
 
+        /// <summary>
+        /// Controlador Usuario.
+        /// </summary>
         public UsuarioController(IUsuarioService usuarioService, ILogger<UsuarioController> logger)
         {
             _usuarioService = usuarioService;
             _logger = logger;
         }
 
+        /// <summary>
+        /// Post.
+        /// </summary>
         [HttpPost]
         public async Task<ResponseEndpoint<string>> Post([FromBody] UsuarioDto dto)
         {
@@ -50,7 +60,17 @@ namespace Empresa.Api.Controllers
 
             try
             {
-                await _usuarioService.CriarUsuarioAsync(dto);
+                // Mapear UsuarioDto para a entidade de domínio Usuario antes de chamar o service
+                var usuario = new Usuario
+                {
+                    Id = dto.UsuarioId,
+                    EmpresaId = dto.UsuarioEmpresaId,
+                    Email = dto.UserLogin ?? string.Empty,
+                    Senha = dto.UserPass ?? string.Empty
+                    // Nota: propriedades como Data, Situacao, Plano, Adm são definidas no service/DB
+                };
+
+                await _usuarioService.CriarUsuarioAsync(usuario);
                 _logger.LogInformation("Usuário criado com sucesso.");
 
                 response.Data = "Usuário criado com sucesso.";
@@ -71,6 +91,9 @@ namespace Empresa.Api.Controllers
             }
         }
 
+        /// <summary>
+        /// Login.
+        /// </summary>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto dto)
         {
@@ -79,6 +102,19 @@ namespace Empresa.Api.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Lists all users.
+        /// </summary>
+        [HttpGet("listar")]
+        [AllowAnonymous] // Permite acesso público a este endpoint específico
+        public async Task<IActionResult> GetUsuarios()
+        {
+            return Ok(await _usuarioService.ListarAsync());
+        }
+
+        /// <summary>
+        /// Get public.
+        /// </summary>
         [HttpGet("public")]
         [AllowAnonymous] // Permite acesso público a este endpoint específico
         public ResponseEndpoint<string> GetPublic()
