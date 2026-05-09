@@ -1,37 +1,20 @@
-using Empresa.Application.DTOs;
-using Empresa.Application.Interfaces;
-using Empresa.Application.Services;
-using Empresa.Application.Validators;
-using Empresa.Domain.Entities;
-using Empresa.Domain.Interfaces.Repositories;
+ï»¿using Empresa.Application;
+using Empresa.Infrastructure;
 using Empresa.Infrastructure.Data;
-using Empresa.Infrastructure.Repositories;
-using FluentValidation;
-using FluentValidation.AspNetCore;
-using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using System.Text;
+[assembly: ApiController]
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-
-builder.Services.AddDbContext<EmpresaDbContext>(options =>
-  options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
-    ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection")),
-    mySqlOptions => mySqlOptions.EnableRetryOnFailure(
-    maxRetryCount: 5, // Number of retry attempts
-    maxRetryDelay: TimeSpan.FromSeconds(30), // Max delay between retries
-    errorNumbersToAdd: null // List of error numbers to consider transient. Null uses default.
-  )
-));
-
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -52,6 +35,8 @@ builder.Services.AddSwaggerGen(options =>
             Url = new Uri("https://example.com/license")
         }
     });
+
+    builder.WebHost.UseUrls($@"http://+:80");
 
     // Adiciona o suporte ao Bearer Token
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -78,8 +63,7 @@ builder.Services.AddSwaggerGen(options =>
             Array.Empty<string>()
         }
     });
-
-    // using System.Reflection;
+    
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
@@ -89,24 +73,11 @@ builder.Services.AddDbContext<EmpresaDbContext>(options =>
   options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
     ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
 
-// Repositories and Services
-builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
-builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(builder.Configuration);
 
-// FluentValidation
-builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddValidatorsFromAssemblyContaining<UsuarioDtoValidator>();
-
-// Mapster
-TypeAdapterConfig<UsuarioDto, Usuario>.NewConfig();
-builder.Services.AddSingleton(TypeAdapterConfig.GlobalSettings);
-builder.Services.AddScoped<IUsuarioService, UsuarioService>();
-
-builder.Services.AddScoped<IEmpresaRepository, EmpresaRepository>();
-builder.Services.AddScoped<IEmpresaService, EmpresaService>();
-
-// Configuração do JWT
-var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
+// ConfiguraÃ§Ã£o do JWT
+var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]!);
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -132,6 +103,15 @@ builder.Services.AddCors(options =>
         policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 });
 
+
+builder.Services.AddControllers()
+    .AddJsonOptions(opts =>
+    {
+        // Prevent serializer exceptions when cycles exist (ignore navigation back-references)
+        opts.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
+
+
 var app = builder.Build();
 
 app.UseCors("AllowAll");
@@ -146,19 +126,22 @@ app.UseCors("AllowAll");
 // Middleware
 if (app.Environment.IsDevelopment())
 {
+    app.UseSwagger();
     app.UseSwaggerUI(options => // UseSwaggerUI is called only in Development.
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-        options.RoutePrefix = string.Empty;
+        options.RoutePrefix = string.Empty; //"swagger";
     });
-
-    app.UseSwagger();
 }
 
-app.UseHttpsRedirection();
+//if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("ASPNETCORE_HTTPS_PORTS")))
+//{
+    app.UseHttpsRedirection();
+//}
+
+app.MapGet("/", () => "API rodando...");
 
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-
 app.Run();

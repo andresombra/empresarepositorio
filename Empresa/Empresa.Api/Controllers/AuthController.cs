@@ -7,25 +7,33 @@ using System.Text;
 
 namespace Empresa.Api.Controllers
 {
-
+    /// <summary>
+    /// Controlador para gerenciar operações relacionadas a empresas.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
-    public class AuthController : Controller
+    public class AuthController : ControllerBase
     {
         private readonly IConfiguration _configuration;
 
+        /// <summary>
+        /// Controlador Auth.
+        /// </summary>
         public AuthController(IConfiguration configuration)
         {
             _configuration = configuration;
         }
 
+        /// <summary>
+        /// GenerateToken.
+        /// </summary>
         [HttpPost("token")]
         public IActionResult GenerateToken([FromBody] UserLogin userLogin)
         {
             if (userLogin.Username == "admin" && userLogin.Password == "password") // Exemplo simples
             {
                 var jwtSettings = _configuration.GetSection("Jwt");
-                var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
+                var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
 
                 if (key.Length < 32)
                     throw new Exception("A chave JWT deve ter pelo menos 32 bytes (256 bits).");
@@ -40,7 +48,7 @@ namespace Empresa.Api.Controllers
                     issuer: jwtSettings["Issuer"],
                     audience: jwtSettings["Audience"],
                     claims: claims,
-                    expires: DateTime.UtcNow.AddMinutes(double.Parse(jwtSettings["ExpiresInMinutes"])),
+                    expires: DateTime.UtcNow.AddMinutes(double.Parse(jwtSettings["ExpiresInMinutes"]!)),
                     signingCredentials: new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256)
                 );
 

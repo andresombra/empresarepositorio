@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Empresa.Domain.Entities
+namespace GerEmpresa.Domain.Entities
 {
-
     [Table("Usuario")]
     public class Usuario
     {
@@ -11,8 +10,7 @@ namespace Empresa.Domain.Entities
         [Column("USU_ID")]
         public int Id { get; set; }
 
-        [Column("USU_EMPRESA_ID")]
-        public int EmpresaId { get; set; }
+        
 
         [Column("USU_EMAIL", TypeName = "longtext")]
         public string Email { get; set; } = string.Empty;
@@ -31,5 +29,12 @@ namespace Empresa.Domain.Entities
 
         [Column("USU_ADM")]
         public int Adm { get; set; }
+
+        // FK
+        [Column("USU_EMPRESA_ID")]
+        public virtual int EmpresaId { get; set; }
+
+        // Navegação
+        public virtual Empresa? Empresa { get; set; }
     }
 }
