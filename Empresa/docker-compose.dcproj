@@ -9,6 +9,7 @@
     <DockerServiceName>empresa.api</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="azure-pipelines.yml" />
     <None Include="docker-compose.override.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
     </None>
