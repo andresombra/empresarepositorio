@@ -10,8 +10,7 @@ namespace GerEmpresa.Domain.Entities
         [Column("USU_ID")]
         public int Id { get; set; }
 
-        [Column("USU_EMPRESA_ID")]
-        public int EmpresaId { get; set; }
+        
 
         [Column("USU_EMAIL", TypeName = "longtext")]
         public string Email { get; set; } = string.Empty;
@@ -32,9 +31,10 @@ namespace GerEmpresa.Domain.Entities
         public int Adm { get; set; }
 
         // FK
-        //public int? UsuEmpresaId { get; set; }
+        [Column("USU_EMPRESA_ID")]
+        public virtual int EmpresaId { get; set; }
 
         // Navegação
-        public Empresa? Empresa { get; set; }
+        public virtual Empresa? Empresa { get; set; }
     }
 }

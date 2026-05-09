@@ -1,45 +1,55 @@
 ﻿using Empresa.Application.DTOs;
 using Empresa.Application.DTOs.Response;
+using Empresa.Domain.Interfaces.Repositories;
 using GerEmpresa.Domain.Entities;
+using MapsterMapper;
+using Microsoft.EntityFrameworkCore;
+
+namespace Empresa.Application.Services;
 
 public class EmpresaService : IEmpresaService
 {
     private readonly IEmpresaRepository _repo;
+    private readonly IMapper _mapper;
 
-    public EmpresaService(IEmpresaRepository repo)
+    public EmpresaService(IEmpresaRepository repo, IMapper mapper)
     {
         _repo = repo;
+        _mapper = mapper;
     }
 
     public async Task<IEnumerable<EmpresaResponseDto>> GetAllAsync()
     {
-        var empresas = await _repo.GetAllAsync();
-        return empresas.Select(e => new EmpresaResponseDto
-        {
-            EmpresaId = e.Id,
-            Nome = e.Nome!,
-            Email = e.Email!,
-            DataCadastro = e.DataCadastro,
-            Contato = e.Contato!,
-            Endereco = e.Endereco!,
-            Usuarios = e.Usuarios?
-                       .Select(u => new UsuarioResponseDto
-                       {
-                           Id = u.Id,
-                           EmpresaId = u.EmpresaId,
-                           Email = u.Email ?? string.Empty,
-                           Data = u.Data ?? string.Empty,
-                           Situacao = u.Situacao ?? string.Empty,
-                           Plano = u.Plano,
-                           Adm = u.Adm
-                       })
-                       .ToList() ?? new List<UsuarioResponseDto>()
-        });
+        var listaEmpresa = await _repo.GetAllAsync(emp => true);
+        return listaEmpresa
+               .Select(e => new EmpresaResponseDto
+               {
+                   EmpresaId = e.Id,
+                   Nome = e.Nome ?? string.Empty,
+                   Email = e.Email ?? string.Empty,
+                   DataCadastro = e.DataCadastro,
+                   Contato = e.Contato ?? string.Empty,
+                   Endereco = e.Endereco ?? string.Empty,
+                   Usuarios = e.Usuarios?
+                              .Select(u => new UsuarioResponseDto
+                              {
+                                  Id = u.Id,
+                                  EmpresaId = u.EmpresaId,
+                                  Email = u.Email ?? string.Empty,
+                                  Data = u.Data ?? string.Empty,
+                                  Situacao = u.Situacao ?? string.Empty,
+                                  Plano = u.Plano,
+                                  Adm = u.Adm
+                              })
+                              .ToList() ?? new List<UsuarioResponseDto>()
+               })
+               .ToList();
     }
 
     public async Task<EmpresaResponseDto?> GetByIdAsync(int id)
     {
-        var e = await _repo.GetByIdAsync(id);
+
+        var e = await _repo.GetAsync(emp => emp.Id == id);
         if (e == null) return null;
         return new EmpresaResponseDto
         {
@@ -74,7 +84,8 @@ public class EmpresaService : IEmpresaService
             Contato = dto.Contato,
             Endereco = dto.Endereco
         };
-        await _repo.AddAsync(empresa);
+
+        await _repo.InsertAsync(empresa);
         return new EmpresaResponseDto
         {
             EmpresaId = empresa.Id,
@@ -88,7 +99,7 @@ public class EmpresaService : IEmpresaService
 
     public async Task<bool> UpdateAsync(int id, EmpresaDto dto)
     {
-        var empresa = await _repo.GetByIdAsync(id);
+        var empresa = await _repo.GetAsync(emp => emp.Id == id);
         if (empresa == null) return false;
         empresa.Nome = dto.Nome;
         empresa.Email = dto.Email;
@@ -101,7 +112,7 @@ public class EmpresaService : IEmpresaService
 
     public async Task<bool> DeleteAsync(int id)
     {
-        var empresa = await _repo.GetByIdAsync(id);
+        var empresa = await _repo.GetAsync(emp => emp.Id == id);
         if (empresa == null) return false;
         await _repo.DeleteAsync(empresa);
         return true;

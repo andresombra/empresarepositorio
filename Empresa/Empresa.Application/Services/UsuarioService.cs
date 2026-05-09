@@ -3,6 +3,8 @@ using Empresa.Application.DTOs.Response;
 using Empresa.Application.Interfaces;
 using GerEmpresa.Domain.Entities;
 using Empresa.Domain.Interfaces.Repositories;
+using Mapster;
+using Empresa.Application.DTOs.Usuario;
 
 namespace Empresa.Application.Services
 {
@@ -15,17 +17,16 @@ namespace Empresa.Application.Services
             _usuarioRepository = usuarioRepository;
         }
 
-        public async Task CriarUsuarioAsync(UsuarioDto usuarioDto)
+        public async Task CriarUsuarioAsync(Usuario usuario)
         {
-            var usuario = new Usuario
+            if (usuario == null)
             {
-                Id = usuarioDto.UsuarioId,
-                Email = usuarioDto.UserLogin,
-                Senha = usuarioDto.UserPass,
-                Situacao = "Ativo",
-                Data = DateTime.UtcNow.ToString("yyyy-MM-dd"),
-            };
+                throw new ArgumentNullException(nameof(usuario));
+            }
 
+            usuario.Situacao = "Ativo";
+            usuario.Data = DateTime.UtcNow.ToString("yyyy-MM-dd");
+            
             await _usuarioRepository.AddAsync(usuario);
         }
 
@@ -38,6 +39,18 @@ namespace Empresa.Application.Services
             {
                 Token = "fake-jwt-token" // Substitua pela lógica de geração de token real
             };
+        }
+
+        public async Task<IList<ResponseUsuarioDto>> ListarAsync() // Return DTOs mapped with Mapster
+        {
+            var lista = await _usuarioRepository.ListaAsync();
+            if (lista == null || lista.Count == 0)
+            {
+                return new List<ResponseUsuarioDto>();
+            }
+
+            var dtoList = lista.Adapt<IList<ResponseUsuarioDto>>();
+            return dtoList;
         }
     }
 }

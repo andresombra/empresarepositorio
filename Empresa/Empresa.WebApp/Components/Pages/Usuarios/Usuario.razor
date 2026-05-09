@@ -1,0 +1,271 @@
+﻿@page "/Usuarios/usuario"
+@rendermode InteractiveServer
+@attribute [StreamRendering]
+
+@using Empresa.Application.DTOs
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject IHttpClientFactory ClientFactory
+@inject IJSRuntime Js
+
+<PageTitle>Usuários</PageTitle>
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1>Módulo de Usuários</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <button class="btn btn-primary" @onclick="AbrirFormularioCriacao">
+                <i class="bi bi-plus-circle"></i> Novo Usuário
+            </button>
+        </div>
+    </div>
+
+    @if (exibindoFormulario)
+    {
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5>@(usuarioEmEdicao?.UsuarioId == 0 ? "Novo Usuário" : "Editar Usuário")</h5>
+            </div>
+            <div class="card-body">
+                <EditForm Model="usuarioEmEdicao" OnValidSubmit="SalvarUsuario">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary class="alert alert-danger" />
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="userNome" class="form-label">Nome</label>
+                            <InputText id="userNome" class="form-control" @bind-Value="usuarioEmEdicao.UserNome" />
+                            <ValidationMessage For="@(() => usuarioEmEdicao.UserNome)" />
+                        </div>
+                        <div class="col-md-6">
+                            <label for="userLogin" class="form-label">E-mail</label>
+                            <InputText id="userLogin" type="email" class="form-control" @bind-Value="usuarioEmEdicao.UserLogin" />
+                            <ValidationMessage For="@(() => usuarioEmEdicao.UserLogin)" />
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="userPass" class="form-label">Senha</label>
+                            <InputText id="userPass" type="password" class="form-control" @bind-Value="usuarioEmEdicao.UserPass" />
+                            <ValidationMessage For="@(() => usuarioEmEdicao.UserPass)" />
+                        </div>
+                        <div class="col-md-6">
+                            <label for="empresaId" class="form-label">Empresa</label>
+                            <InputNumber id="empresaId" class="form-control" @bind-Value="usuarioEmEdicao.UsuarioEmpresaId" />
+                            <ValidationMessage For="@(() => usuarioEmEdicao.UsuarioEmpresaId)" />
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-check-circle"></i> Salvar
+                        </button>
+                        <button type="button" class="btn btn-secondary" @onclick="CancelarEdicao">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    }
+
+    @if (mensagem != null)
+    {
+        <div class="alert alert-@tipoMensagem alert-dismissible fade show" role="alert">
+            @mensagem
+            <button type="button" class="btn-close" @onclick="@(() => mensagem = null)"></button>
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-header bg-secondary text-white">
+            <h5>Lista de Usuários</h5>
+        </div>
+        <div class="card-body">
+            @if (carregando)
+            {
+                <div class="text-center">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                </div>
+            }
+            else if (usuarios == null || usuarios.Count == 0)
+            {
+                <div class="alert alert-info">Nenhum usuário cadastrado.</div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                                <th>E-mail</th>
+                                <th>Empresa ID</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var usuario in usuarios)
+                            {
+                                <tr>
+                                    <td>@usuario.UsuarioId</td>
+                                    <td>@usuario.UserNome</td>
+                                    <td>@usuario.UserLogin</td>
+                                    <td>@usuario.UsuarioEmpresaId</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning" @onclick="@(() => EditarUsuario(usuario))">
+                                            <i class="bi bi-pencil"></i> Editar
+                                        </button>
+                                        <button class="btn btn-sm btn-danger" @onclick="@(() => ConfirmarExclusao(usuario.UsuarioId))">
+                                            <i class="bi bi-trash"></i> Excluir
+                                        </button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<UsuarioDto> usuarios = new();
+    private UsuarioDto usuarioEmEdicao = new();
+    private bool exibindoFormulario = false;
+    private bool carregando = true;
+    private string? mensagem;
+    private string tipoMensagem = "success";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CarregarUsuarios();
+    }
+
+    private async Task CarregarUsuarios()
+    {
+        try
+        {
+            carregando = true;
+            var client = ClientFactory.CreateClient("API"); // garante o cliente com AuthorizationHandler
+            usuarios = await client.GetFromJsonAsync<List<UsuarioDto>>("api/usuario/listar") ?? new();
+            //usuarios = await Http.GetFromJsonAsync<List<UsuarioDto>>("api/usuario/listar") ?? new();
+        }
+        catch (Exception ex)
+        {
+            ExibirMensagem($"Erro ao carregar usuários: {ex.Message}", "danger");
+        }
+        finally
+        {
+            carregando = false;
+        }
+    }
+
+    private void AbrirFormularioCriacao()
+    {
+        usuarioEmEdicao = new UsuarioDto();
+        exibindoFormulario = true;
+    }
+
+    private void EditarUsuario(UsuarioDto usuario)
+    {
+        usuarioEmEdicao = new UsuarioDto
+        {
+            UsuarioId = usuario.UsuarioId,
+            UserNome = usuario.UserNome,
+            UserLogin = usuario.UserLogin,
+            UserPass = usuario.UserPass,
+            UsuarioEmpresaId = usuario.UsuarioEmpresaId
+        };
+        exibindoFormulario = true;
+    }
+
+    private async Task SalvarUsuario()
+    {
+        try
+        {
+            if (usuarioEmEdicao.UsuarioId == 0)
+            {
+                var response = await Http.PostAsJsonAsync("api/usuario", usuarioEmEdicao);
+                if (response.IsSuccessStatusCode)
+                {
+                    ExibirMensagem("Usuário criado com sucesso!", "success");
+                    await CarregarUsuarios();
+                }
+                else
+                {
+                    ExibirMensagem("Erro ao criar usuário.", "danger");
+                }
+            }
+            else
+            {
+                var response = await Http.PutAsJsonAsync($"api/usuario/{usuarioEmEdicao.UsuarioId}", usuarioEmEdicao);
+                if (response.IsSuccessStatusCode)
+                {
+                    ExibirMensagem("Usuário atualizado com sucesso!", "success");
+                    await CarregarUsuarios();
+                }
+                else
+                {
+                    ExibirMensagem("Erro ao atualizar usuário.", "danger");
+                }
+            }
+            CancelarEdicao();
+        }
+        catch (Exception ex)
+        {
+            ExibirMensagem($"Erro: {ex.Message}", "danger");
+        }
+    }
+
+    private async Task ConfirmarExclusao(int usuarioId)
+    {
+        if (await Js.InvokeAsync<bool>("confirm", "Tem certeza que deseja excluir este usuário?"))
+        {
+            await ExcluirUsuario(usuarioId);
+        }
+    }
+
+    private async Task ExcluirUsuario(int usuarioId)
+    {
+        try
+        {
+            var response = await Http.DeleteAsync($"api/usuario/{usuarioId}");
+            if (response.IsSuccessStatusCode)
+            {
+                ExibirMensagem("Usuário excluído com sucesso!", "success");
+                await CarregarUsuarios();
+            }
+            else
+            {
+                ExibirMensagem("Erro ao excluir usuário.", "danger");
+            }
+        }
+        catch (Exception ex)
+        {
+            ExibirMensagem($"Erro: {ex.Message}", "danger");
+        }
+    }
+
+    private void CancelarEdicao()
+    {
+        exibindoFormulario = false;
+        usuarioEmEdicao = new();
+    }
+
+    private void ExibirMensagem(string msg, string tipo)
+    {
+        mensagem = msg;
+        tipoMensagem = tipo;
+    }
+
+    // [Inject] HttpClient Http { get; set; } = null!;
+    // [Inject] IJSRuntime Js { get; set; } = null!;
+}

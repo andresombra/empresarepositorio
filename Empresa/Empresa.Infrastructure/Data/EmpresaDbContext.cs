@@ -1,4 +1,5 @@
-﻿using GerEmpresa.Domain.Entities;
+﻿using Empresa.Infrastructure.Mappings;
+using GerEmpresa.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Empresa.Infrastructure.Data
@@ -9,10 +10,13 @@ namespace Empresa.Infrastructure.Data
 
         public DbSet<Usuario> Usuarios => Set<Usuario>();
         public DbSet<GerEmpresa.Domain.Entities.Empresa> Empresas { get; set; }
+        public DbSet<Fornecedor> Fornecedores { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            OnModelCreatingUsuario(modelBuilder);
 
             modelBuilder.Entity<GerEmpresa.Domain.Entities.Empresa>()
                 .ToTable("Empresa", schema: "andresombra");
@@ -42,8 +46,34 @@ namespace Empresa.Infrastructure.Data
                       .HasForeignKey(u => u.EmpresaId)
                       .HasConstraintName("FK_Usuario_Empresa");
             });
+
+            // Aplicar mapeamento do Fornecedor
+            modelBuilder.ApplyConfiguration(new FornecedorMapping());
         }
 
+        private static void OnModelCreatingUsuario(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new UsuarioMapping());
+        }
+
+        public async Task BeginTransaction()
+        {
+            await Database.BeginTransactionAsync();
+        }
+
+        public async Task<bool> Commit()
+        {
+            var retorno = await SaveChangesAsync() > 0;
+
+            await Database.CommitTransactionAsync();
+
+            return retorno;
+        }
+
+        public async Task Rollback()
+        {
+            await Database.RollbackTransactionAsync();
+        }   
 
     }
 }
