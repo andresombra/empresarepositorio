@@ -10,11 +10,11 @@ namespace Empresa.Application.Services
 {
     public class UsuarioService : IUsuarioService
     {
-        private readonly IUsuarioRepository _usuarioRepository;
+        //private readonly IUsuarioRepository _usuarioRepository;
 
-        public UsuarioService(IUsuarioRepository usuarioRepository)
+        public UsuarioService(IUsuarioRepository _usuarioRepository)
         {
-            _usuarioRepository = usuarioRepository;
+           _usuarioRepository = usuarioRepository;
         }
 
         public async Task CriarUsuarioAsync(Usuario usuario)

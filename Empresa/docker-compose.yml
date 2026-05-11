@@ -1,6 +1,0 @@
-services:
-  empresa.api:
-    image: ${DOCKER_REGISTRY-}empresaapi
-    build:
-      context: .
-      dockerfile: Empresa.Api/Dockerfile

@@ -1,4 +1,5 @@
 ﻿using Empresa.Application.DTOs;
+using Empresa.Application.DTOs.Empresa;
 using Empresa.Application.DTOs.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -45,7 +46,7 @@ namespace Empresa.Api.Controllers
         /// Post.
         /// </summary>
         [HttpPost]
-        public async Task<ActionResult<EmpresaResponseDto>> Post([FromBody] EmpresaDto dto)
+        public async Task<ActionResult<EmpresaResponseDto>> Post([FromBody] CreateEmpresaDto dto)
         {
             var empresa = await _service.CreateAsync(dto);
             return CreatedAtAction(nameof(Get), new { id = empresa.EmpresaId }, empresa);

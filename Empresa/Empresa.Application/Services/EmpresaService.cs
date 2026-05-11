@@ -1,4 +1,5 @@
 ﻿using Empresa.Application.DTOs;
+using Empresa.Application.DTOs.Empresa;
 using Empresa.Application.DTOs.Response;
 using Empresa.Domain.Interfaces.Repositories;
 using GerEmpresa.Domain.Entities;
@@ -74,13 +75,13 @@ public class EmpresaService : IEmpresaService
         };
     }
 
-    public async Task<EmpresaResponseDto> CreateAsync(EmpresaDto dto)
+    public async Task<EmpresaResponseDto> CreateAsync(CreateEmpresaDto dto)
     {
         var empresa = new GerEmpresa.Domain.Entities.Empresa
         {
             Nome = dto.Nome,
             Email = dto.Email,
-            DataCadastro = dto.DataCadastro,
+            DataCadastro = DateTime.UtcNow,
             Contato = dto.Contato,
             Endereco = dto.Endereco
         };
