@@ -10,9 +10,9 @@ namespace Empresa.Application.Services
 {
     public class UsuarioService : IUsuarioService
     {
-        //private readonly IUsuarioRepository _usuarioRepository;
+        private readonly IUsuarioRepository _usuarioRepository;
 
-        public UsuarioService(IUsuarioRepository _usuarioRepository)
+        public UsuarioService(IUsuarioRepository usuarioRepository)
         {
            _usuarioRepository = usuarioRepository;
         }
