@@ -4,7 +4,6 @@ using Empresa.Application.DTOs.Response;
 using Empresa.Domain.Interfaces.Repositories;
 using GerEmpresa.Domain.Entities;
 using MapsterMapper;
-using Microsoft.EntityFrameworkCore;
 
 namespace Empresa.Application.Services;
 

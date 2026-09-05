@@ -1,6 +1,6 @@
 ﻿using Empresa.Domain.Interfaces.Repositories;
 using Empresa.Infrastructure.Data;
-using Empresa.Infrastructure.Data.Bases;
+using Empresa.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Empresa.Infrastructure.Repositories;
@@ -35,4 +35,3 @@ public class UnitOfWork : IUnitOfWork
     public IFornecedorRepository FornecedorRepository => new FornecedorRepository(_context);
     public IUsuarioRepository UsuarioRepository => new UsuarioRepository(_context);
 }
-

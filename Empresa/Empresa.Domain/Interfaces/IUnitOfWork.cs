@@ -1,6 +1,6 @@
 ﻿using Empresa.Domain.Interfaces.Repositories;
 
-namespace Empresa.Infrastructure.Data.Bases;
+namespace Empresa.Domain.Interfaces;
 
 public interface IUnitOfWork
 {
