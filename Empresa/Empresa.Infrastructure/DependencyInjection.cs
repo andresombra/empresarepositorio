@@ -1,4 +1,5 @@
 using Empresa.Domain.Interfaces.Repositories;
+using Empresa.Domain.Interfaces;
 using Empresa.Infrastructure.Data;
 using Empresa.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ public static class DependencyInjection
         services.AddScoped<IUsuarioRepository, UsuarioRepository>();
         services.AddScoped<IFornecedorRepository, FornecedorRepository>();
         services.AddScoped<IEmpresaRepository, EmpresaRepository>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;
     }
