@@ -1,0 +1,29 @@
+{
+  "inputs": [],
+  "servers": {
+	"context7": {
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "@upstash/context7-mcp" ]
+    },  
+    "mcp-mysql-empresa": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": [
+        "/c",
+        "npx",
+        "-y",
+        "@benborla29/mcp-server-mysql"
+      ],
+      "env": {
+        "MYSQL_HOST": "mysql.andresombra.com.br",
+        "MYSQL_PORT": "3306",
+        "MYSQL_USER": "andresombra",
+        "MYSQL_PASS": "${env:MYSQL_EMPRESA_PASSWORD}",
+        "MYSQL_DB": "andresombra",
+        "ALLOW_INSERT_OPERATION": "false",
+        "ALLOW_UPDATE_OPERATION": "false",
+        "ALLOW_DELETE_OPERATION": "false"
+      }
+    }
+  }
+}
