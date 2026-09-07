@@ -2,9 +2,9 @@
 using Empresa.Application.DTOs.Empresa;
 using Empresa.Application.DTOs.Response;
 using Empresa.Domain.Interfaces.Repositories;
+using Empresa.Domain.Interfaces;
 using GerEmpresa.Domain.Entities;
 using MapsterMapper;
-using Microsoft.EntityFrameworkCore;
 
 namespace Empresa.Application.Services;
 
@@ -12,11 +12,13 @@ public class EmpresaService : IEmpresaService
 {
     private readonly IEmpresaRepository _repo;
     private readonly IMapper _mapper;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public EmpresaService(IEmpresaRepository repo, IMapper mapper)
+    public EmpresaService(IEmpresaRepository repo, IMapper mapper, IUnitOfWork unitOfWork)
     {
         _repo = repo;
         _mapper = mapper;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<IEnumerable<EmpresaResponseDto>> GetAllAsync()
@@ -100,14 +102,17 @@ public class EmpresaService : IEmpresaService
 
     public async Task<bool> UpdateAsync(int id, EmpresaDto dto)
     {
+        ArgumentNullException.ThrowIfNull(dto);
+
         var empresa = await _repo.GetAsync(emp => emp.Id == id);
         if (empresa == null) return false;
+
         empresa.Nome = dto.Nome;
         empresa.Email = dto.Email;
         empresa.DataCadastro = dto.DataCadastro;
         empresa.Contato = dto.Contato;
         empresa.Endereco = dto.Endereco;
-        await _repo.UpdateAsync(empresa);
+        await _unitOfWork.SaveChangesAsync();
         return true;
     }
 

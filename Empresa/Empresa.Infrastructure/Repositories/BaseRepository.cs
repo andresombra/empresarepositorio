@@ -73,9 +73,11 @@ namespace Empresa.Infrastructure.Repositories
 
         public async Task<T> UpdateAsync(T item)
         {
-            _context.Entry(item).CurrentValues.SetValues(item);
+            ArgumentNullException.ThrowIfNull(item);
+
             _dataset.Update(item);
             await _context.SaveChangesAsync(CancellationToken.None);
+
             return item;
         }
 

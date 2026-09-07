@@ -1,5 +1,5 @@
 ﻿using Empresa.Domain.Interfaces.Repositories;
-using Empresa.Infrastructure.Data.Bases;
+using Empresa.Domain.Interfaces;
 using Empresa.Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
